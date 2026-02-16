@@ -1,13 +1,17 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getResend(): Resend | null {
+  const key = process.env.RESEND_API_KEY;
+  return typeof key === 'string' && key.length > 0 ? new Resend(key) : null;
+}
 
 const FROM = 'Next Level Web <onboarding@resend.dev>'; // Replace with your verified domain when ready
 
 export type SendEmailResult = { ok: true } | { ok: false; message: string };
 
 export async function sendMagicLinkEmail(to: string, magicLinkUrl: string): Promise<SendEmailResult> {
-  if (!process.env.RESEND_API_KEY) {
+  const resend = getResend();
+  if (!resend) {
     return { ok: false, message: 'RESEND_API_KEY not set' };
   }
   const { data, error } = await resend.emails.send({
