@@ -30,6 +30,10 @@ yarn-error.log*
 *.swp
 *.swo
 
+# Local DB (SQLite)
+prisma/*.db
+prisma/*.db-journal
+
 # OS
 .DS_Store
 Thumbs.db

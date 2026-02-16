@@ -1,0 +1,55 @@
+// Next Level Web — Dashboard & magic-link auth
+// Step 1: Data store (SQLite). Resend for emails (configured later).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Lead {
+  id           String   @id @default(cuid())
+  email        String
+  name         String
+  company      String?
+  packageId    String   // starter | growth | premium | custom
+  packageLabel String   // display text from form
+  message      String
+  createdAt    DateTime @default(now())
+  // Optional for Stripe phase
+  stripeCustomerId String?
+  paymentStatus   String? // e.g. unpaid | paid_deposit | paid_full
+  // Project progress (admin updates, customer sees in dashboard)
+  projectUrl      String?   // Staging/preview URL for customer to check progress
+  progressStage   String?   // e.g. brief_received, design_started, live
+  progressUpdatedAt DateTime?
+  // Customer feedback when stage is "your_review"
+  customerFeedback   String?
+  customerFeedbackAt DateTime?
+  // Package change request (customer changed package in dashboard)
+  packageChangeRequestedAt DateTime?
+  packageChangeFrom   String?   // packageId before change
+  ticketMessages      TicketMessage[]
+}
+
+model TicketMessage {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  message   String
+  fromRole  String   // "customer" | "admin"
+  createdAt DateTime @default(now())
+}
+
+model MagicLinkToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique // SHA-256 of the token sent in URL
+  email     String
+  role      String    // "customer" | "admin"
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+}

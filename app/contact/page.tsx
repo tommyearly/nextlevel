@@ -22,12 +22,19 @@ export const metadata: Metadata = {
   alternates: { canonical: '/contact' },
 };
 
-export default function ContactPage() {
+type ContactPageProps = {
+  searchParams?: { package?: string | string[] };
+};
+
+export default function ContactPage({ searchParams }: ContactPageProps) {
+  const packageParam = searchParams?.package;
+  const defaultPackage = Array.isArray(packageParam) ? packageParam[0] : packageParam ?? undefined;
+
   return (
     <div className="relative min-h-screen overflow-hidden">
       <HeroBackground />
       <div className="relative z-10 pt-16 sm:pt-24 pb-20 sm:pb-28">
-      <div className="container mx-auto px-4 sm:px-6">
+        <div className="container mx-auto px-4 sm:px-6">
         <div className="max-w-3xl mx-auto">
           <header className="text-center mb-12 sm:mb-16">
             <p className="text-accent-blue font-medium text-sm uppercase tracking-wider">Get in touch</p>
@@ -43,7 +50,7 @@ export default function ContactPage() {
               Irish-run, honest pricing, no surprises. Tell us your goals and we&apos;ll get back within 24 hours with clear next steps.
             </p>
           </header>
-          <ContactForm />
+          <ContactForm defaultPackage={defaultPackage} />
           <div className="mt-10 p-6 rounded-2xl border border-white/5 bg-brand-card/40 backdrop-blur-sm">
             <h2 className="font-heading text-lg font-semibold text-slate-200 mb-3">Contact details</h2>
             <p className="text-slate-400 text-sm">
@@ -73,7 +80,7 @@ export default function ContactPage() {
             </a>
           </p>
         </div>
-      </div>
+        </div>
       </div>
     </div>
   );

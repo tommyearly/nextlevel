@@ -1,9 +1,16 @@
 'use client';
 
 import { useState } from 'react';
+import { PACKAGE_FORM_OPTIONS, getPackageOptionValue } from '@/lib/packages';
 import GradientButton from './GradientButton';
 
-export default function ContactForm() {
+type ContactFormProps = {
+  /** Package id from URL (?package=starter etc.) — pre-selects the package dropdown */
+  defaultPackage?: string | null;
+};
+
+export default function ContactForm({ defaultPackage }: ContactFormProps) {
+  const initialPackageValue = getPackageOptionValue(defaultPackage);
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -13,11 +20,16 @@ export default function ContactForm() {
     const data = new FormData(form);
     const obj = Object.fromEntries(data.entries());
     try {
-      await fetch('/api/contact', {
+      const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(obj),
       });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setStatus('error');
+        return;
+      }
       setStatus('sent');
       form.reset();
     } catch {
@@ -74,15 +86,17 @@ export default function ContactForm() {
         <select
           name="package"
           required
+          defaultValue={initialPackageValue}
           className="mt-2 block w-full rounded-lg border border-white/10 bg-brand-surface px-4 py-3 text-slate-100 focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue disabled:opacity-50"
           disabled={status === 'sending'}
           aria-describedby="package-hint"
         >
           <option value="">Select a package</option>
-          <option value="Starter — €900 (5 pages + contact form)">Starter — €900 (5 pages + contact form)</option>
-          <option value="Growth — €1,200 (5 pages + contact form + editable homepage)">Growth — €1,200 (5 pages + contact form + editable homepage)</option>
-          <option value="Premium — €2,000 (5 pages + contact form + fully editable)">Premium — €2,000 (5 pages + contact form + fully editable)</option>
-          <option value="Custom (describe below)">Custom — tell me more</option>
+          {PACKAGE_FORM_OPTIONS.map((opt) => (
+            <option key={opt.id} value={opt.value}>
+              {opt.id === 'custom' ? 'Custom — tell me more' : opt.value}
+            </option>
+          ))}
         </select>
         <span id="package-hint" className="mt-1.5 text-xs text-slate-500">
           All packages include domain & hosting. €200 deposit required.

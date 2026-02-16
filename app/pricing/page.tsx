@@ -167,7 +167,7 @@ export default function PricingPage() {
                       </ul>
                       <div className="mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-white/5">
                         <GradientButton
-                          href="/contact"
+                          href={`/contact?package=${pkg.id}`}
                           size="lg"
                           className="w-full min-h-[48px] sm:min-h-0"
                           ariaLabel={`${pkg.cta} — ${pkg.name} €${pkg.price}`}
