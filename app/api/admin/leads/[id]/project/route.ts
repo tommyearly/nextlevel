@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionFromCookie } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-import { PROGRESS_STAGES } from '@/lib/progress';
+import { PROGRESS_STAGES, type ProgressStageId } from '@/lib/progress';
 
-const VALID_STAGE_IDS = new Set(PROGRESS_STAGES.map((s) => s.id));
+const VALID_STAGE_IDS = new Set<string>(PROGRESS_STAGES.map((s) => s.id));
 
 type RouteContext = { params: Promise<{ id: string }> | { id: string } };
 
@@ -22,8 +22,10 @@ export async function POST(request: NextRequest, context: RouteContext) {
     const rawUrl = formData.get('projectUrl');
     const projectUrl = typeof rawUrl === 'string' ? rawUrl.trim() || null : null;
     const rawStage = formData.get('progressStage');
-    const progressStage =
-      typeof rawStage === 'string' && VALID_STAGE_IDS.has(rawStage) ? rawStage : null;
+    const progressStage: ProgressStageId | null =
+      typeof rawStage === 'string' && VALID_STAGE_IDS.has(rawStage)
+        ? (rawStage as ProgressStageId)
+        : null;
 
     const lead = await prisma.lead.findUnique({ where: { id } });
     if (!lead) {
