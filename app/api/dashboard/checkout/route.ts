@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSessionFromCookie } from '@/lib/auth';
+import { getSessionFromRequest } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { stripe, getCheckoutPriceId } from '@/lib/stripe';
 
 export async function POST(request: NextRequest) {
-  const session = await getSessionFromCookie();
+  const session = await getSessionFromRequest(request);
   if (!session || session.role !== 'customer') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

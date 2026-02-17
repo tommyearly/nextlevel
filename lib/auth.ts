@@ -1,6 +1,6 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
-import type { NextResponse } from 'next/server';
+import type { NextRequest, NextResponse } from 'next/server';
 
 const COOKIE_NAME = 'nextlevel_session';
 const MAX_AGE = 60 * 60 * 24 * 7; // 7 days
@@ -63,6 +63,13 @@ export async function setSessionCookie(token: string): Promise<void> {
 export async function getSessionFromCookie(): Promise<SessionPayload | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
+  if (!token) return null;
+  return verifySession(token);
+}
+
+/** Use in Route Handlers: read session from the incoming request so cookies are reliable in serverless. */
+export async function getSessionFromRequest(request: NextRequest): Promise<SessionPayload | null> {
+  const token = request.cookies.get(COOKIE_NAME)?.value;
   if (!token) return null;
   return verifySession(token);
 }
