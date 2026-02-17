@@ -21,6 +21,10 @@ No need to add **`DATABASE_URL`** yourself — the app uses **`POSTGRES_PRISMA_U
 2. In Vercel → **Settings** → **Environment Variables** → add **`DATABASE_URL`**.
 3. Redeploy.
 
+## Faster builds (optional)
+
+If deploys are slow, set **`SKIP_DB_PUSH=1`** in Vercel. The build will skip `prisma db push` and finish in ~1–2 min. When you change the Prisma schema, run **`npx prisma db push`** once locally (with `DATABASE_URL` or `POSTGRES_PRISMA_URL` pointing at your Supabase DB), then deploy as usual.
+
 ## Local development
 
 Set **`DATABASE_URL`** (or **`POSTGRES_PRISMA_URL`**) to your Postgres URL, e.g. the same Supabase/Neon URL or `postgresql://user:pass@localhost:5432/dbname`.
