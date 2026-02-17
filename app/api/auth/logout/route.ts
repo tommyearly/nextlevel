@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { clearSessionCookie } from '@/lib/auth';
+import { COOKIE_NAME } from '@/lib/auth';
 
-async function handleLogout(request: NextRequest) {
-  await clearSessionCookie();
+function handleLogout(request: NextRequest) {
   const base = request.nextUrl.origin;
-  return NextResponse.redirect(new URL('/bye', base));
+  const res = NextResponse.redirect(new URL('/bye', base));
+  res.cookies.set(COOKIE_NAME, '', { path: '/', maxAge: 0 });
+  return res;
 }
 
-export async function POST(request: NextRequest) {
+export function GET(request: NextRequest) {
   return handleLogout(request);
 }
 
-export async function GET(request: NextRequest) {
+export function POST(request: NextRequest) {
   return handleLogout(request);
 }

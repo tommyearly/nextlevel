@@ -31,11 +31,9 @@ export default async function DashboardPage() {
     <div className="max-w-2xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <h1 className="font-heading text-2xl sm:text-3xl font-bold text-slate-50">Your dashboard</h1>
-        <form action="/api/auth/logout" method="POST">
-          <button type="submit" className="text-sm text-slate-400 hover:text-accent-blue transition-colors">
+        <Link href="/api/auth/logout" className="text-sm text-slate-400 hover:text-accent-blue transition-colors">
             Sign out
-          </button>
-        </form>
+          </Link>
       </div>
       <GlassCard className="p-6 sm:p-8">
         <h2 className="font-heading text-lg font-semibold text-slate-50 mb-4">Your package</h2>

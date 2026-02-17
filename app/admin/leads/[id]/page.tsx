@@ -31,11 +31,9 @@ export default async function AdminLeadDetailPage({ params }: Props) {
         >
           ← Back to leads
         </Link>
-        <form action="/api/auth/logout?to=admin" method="POST">
-          <button type="submit" className="text-sm text-slate-400 hover:text-accent-blue transition-colors">
+        <Link href="/api/auth/logout" className="text-sm text-slate-400 hover:text-accent-blue transition-colors">
             Sign out
-          </button>
-        </form>
+          </Link>
       </div>
       <GlassCard className="p-6 sm:p-8">
         <h1 className="font-heading text-xl font-bold text-slate-50 mb-6">Lead details</h1>

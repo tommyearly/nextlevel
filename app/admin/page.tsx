@@ -21,14 +21,9 @@ export default async function AdminPage() {
         <h1 className="font-heading text-2xl sm:text-3xl font-bold text-slate-50">
           Leads
         </h1>
-        <form action="/api/auth/logout?to=admin" method="POST">
-          <button
-            type="submit"
-            className="text-sm text-slate-400 hover:text-accent-blue transition-colors"
-          >
+        <Link href="/api/auth/logout" className="text-sm text-slate-400 hover:text-accent-blue transition-colors">
             Sign out
-          </button>
-        </form>
+          </Link>
       </div>
       <GlassCard className="overflow-hidden">
         {leads.length === 0 ? (
