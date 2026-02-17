@@ -58,7 +58,7 @@ export default async function AdminPage() {
                   return (
                     <tr key={lead.id} className="border-b border-white/5 last:border-0">
                       <td className="p-4">
-                        <Link href={`/admin/leads/${lead.id}`} className="text-slate-200 hover:text-accent-blue hover:underline font-medium">
+                        <Link href={`/admin/leads/${lead.id}`} prefetch={false} className="text-slate-200 hover:text-accent-blue hover:underline font-medium">
                           {lead.name}
                         </Link>
                       </td>
