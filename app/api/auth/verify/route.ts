@@ -34,7 +34,11 @@ export async function GET(request: NextRequest) {
     setSessionCookieOnResponse(response, sessionToken);
     return response;
   } catch (err) {
-    console.error('Auth verify error:', err);
-    return NextResponse.redirect(new URL(`${LOGIN_URL}?error=server`, request.url));
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('Auth verify error:', message);
+    const isSessionSecret = /SESSION_SECRET/i.test(message);
+    return NextResponse.redirect(
+      new URL(`${LOGIN_URL}?error=${isSessionSecret ? 'config' : 'server'}`, request.url)
+    );
   }
 }

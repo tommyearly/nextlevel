@@ -47,7 +47,11 @@ export default function DashboardLoginPage() {
           ? 'That link has expired. Request a new one below.'
           : urlError === 'invalid'
             ? 'Invalid link. Request a new one below.'
-            : null;
+            : urlError === 'server'
+              ? 'Something went wrong on our side. Check that SESSION_SECRET is set in Vercel (32+ characters, no # in the value), then try again.'
+              : urlError === 'config'
+                ? 'Session not configured. Set SESSION_SECRET in Vercel (32+ characters, avoid #).'
+                : null;
 
   return (
     <div className="max-w-md mx-auto">
