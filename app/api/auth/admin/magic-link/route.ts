@@ -7,7 +7,7 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.trim().toLowerCase();
 
 export async function POST(request: Request) {
   if (!ADMIN_EMAIL) {
-    return NextResponse.json({ error: 'Admin login not configured' }, { status: 503 });
+    return NextResponse.json({ error: 'Admin login not configured. Set ADMIN_EMAIL in Vercel.' }, { status: 503 });
   }
   try {
     const body = await request.json();
@@ -18,11 +18,26 @@ export async function POST(request: Request) {
     if (email !== ADMIN_EMAIL) {
       return NextResponse.json({ error: 'Invalid email' }, { status: 403 });
     }
-    const token = await createMagicLink(email, 'admin');
+
+    let token: string;
+    try {
+      token = await createMagicLink(email, 'admin');
+    } catch (dbError) {
+      console.error('Admin magic link DB error:', dbError);
+      return NextResponse.json(
+        { error: 'Database error. On Vercel use a hosted DB (e.g. Turso) and set DATABASE_URL.' },
+        { status: 503 }
+      );
+    }
+
     const magicLinkUrl = `${BASE_URL}/api/auth/verify?token=${encodeURIComponent(token)}`;
     const result = await sendMagicLinkEmail(email, magicLinkUrl);
     if (!result.ok) {
-      return NextResponse.json({ error: 'Could not send email. Try again later.' }, { status: 503 });
+      console.error('Resend send failed:', result.message);
+      return NextResponse.json(
+        { error: `Could not send email: ${result.message}` },
+        { status: 503 }
+      );
     }
     return NextResponse.json({ success: true });
   } catch (e) {
