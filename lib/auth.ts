@@ -1,8 +1,17 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
+import type { NextResponse } from 'next/server';
 
 const COOKIE_NAME = 'nextlevel_session';
 const MAX_AGE = 60 * 60 * 24 * 7; // 7 days
+
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax' as const,
+  maxAge: MAX_AGE,
+  path: '/',
+};
 
 type SessionPayload = {
   email: string;
@@ -14,7 +23,10 @@ type SessionPayload = {
 function getSecret(): Uint8Array {
   const secret = process.env.SESSION_SECRET;
   if (!secret || secret.length < 32) {
-    throw new Error('SESSION_SECRET must be set and at least 32 characters');
+    const hint = secret && secret.length > 0 && secret.length < 32
+      ? ' (SESSION_SECRET may be truncated: avoid # in the value, or set it in Vercel without #)'
+      : '';
+    throw new Error('SESSION_SECRET must be set and at least 32 characters' + hint);
   }
   return new TextEncoder().encode(secret);
 }
@@ -38,15 +50,14 @@ export async function verifySession(token: string): Promise<SessionPayload | nul
   }
 }
 
+/** Set session cookie on a response (use this before returning redirect so the cookie is sent). */
+export function setSessionCookieOnResponse(response: NextResponse, token: string): void {
+  response.cookies.set(COOKIE_NAME, token, COOKIE_OPTIONS);
+}
+
 export async function setSessionCookie(token: string): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.set(COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: MAX_AGE,
-    path: '/',
-  });
+  cookieStore.set(COOKIE_NAME, token, COOKIE_OPTIONS);
 }
 
 export async function getSessionFromCookie(): Promise<SessionPayload | null> {
