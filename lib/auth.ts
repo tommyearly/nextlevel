@@ -5,13 +5,17 @@ import type { NextRequest, NextResponse } from 'next/server';
 const COOKIE_NAME = 'nextlevel_session';
 const MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
-const COOKIE_OPTIONS = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax' as const,
-  maxAge: MAX_AGE,
-  path: '/',
-};
+function getCookieOptions(overrides?: { maxAge?: number }) {
+  const domain = process.env.COOKIE_DOMAIN || undefined; // e.g. .nextlevelweb.ie so www and non-www share the cookie
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax' as const,
+    maxAge: overrides?.maxAge ?? MAX_AGE,
+    path: '/',
+    ...(domain && { domain }),
+  };
+}
 
 type SessionPayload = {
   email: string;
@@ -52,12 +56,12 @@ export async function verifySession(token: string): Promise<SessionPayload | nul
 
 /** Set session cookie on a response (use this before returning redirect so the cookie is sent). */
 export function setSessionCookieOnResponse(response: NextResponse, token: string): void {
-  response.cookies.set(COOKIE_NAME, token, COOKIE_OPTIONS);
+  response.cookies.set(COOKIE_NAME, token, getCookieOptions());
 }
 
 export async function setSessionCookie(token: string): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.set(COOKIE_NAME, token, COOKIE_OPTIONS);
+  cookieStore.set(COOKIE_NAME, token, getCookieOptions());
 }
 
 export async function getSessionFromCookie(): Promise<SessionPayload | null> {
@@ -79,4 +83,4 @@ export async function clearSessionCookie(): Promise<void> {
   cookieStore.delete(COOKIE_NAME);
 }
 
-export { COOKIE_NAME };
+export { COOKIE_NAME, getCookieOptions };
