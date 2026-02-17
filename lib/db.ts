@@ -1,5 +1,6 @@
 /**
  * Prisma client singleton for Next.js (avoid multiple instances in dev).
+ * Use DATABASE_URL: Postgres on Vercel (Vercel Postgres, Neon, Supabase); locally same or file for SQLite if you switch back.
  */
 import { PrismaClient } from '@prisma/client';
 

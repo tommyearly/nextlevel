@@ -1,12 +1,12 @@
 // Next Level Web — Dashboard & magic-link auth
-// Step 1: Data store (SQLite). Resend for emails (configured later).
+// Local: SQLite (file:./dev.db). Vercel: use Postgres (Vercel Postgres, Neon, or Supabase).
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
