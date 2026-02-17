@@ -24,8 +24,13 @@ export async function POST(request: Request) {
       token = await createMagicLink(email, 'admin');
     } catch (dbError) {
       console.error('Admin magic link DB error:', dbError);
+      const hasDbUrl = !!(process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL);
       return NextResponse.json(
-        { error: 'Database error. On Vercel use a hosted DB (e.g. Turso) and set DATABASE_URL.' },
+        {
+          error: hasDbUrl
+            ? 'Database error. In Vercel, ensure POSTGRES_PRISMA_URL is set and run "npx prisma db push" locally (with that URL in .env) so tables exist.'
+            : 'Database error. In Vercel set DATABASE_URL or connect Supabase so POSTGRES_PRISMA_URL is set (Settings → Environment Variables).',
+        },
         { status: 503 }
       );
     }
