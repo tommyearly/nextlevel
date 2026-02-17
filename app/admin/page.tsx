@@ -21,7 +21,7 @@ export default async function AdminPage() {
         <h1 className="font-heading text-2xl sm:text-3xl font-bold text-slate-50">
           Leads
         </h1>
-        <Link href="/api/auth/logout" className="text-sm text-slate-400 hover:text-accent-blue transition-colors">
+        <Link href="/api/auth/logout" prefetch={false} className="text-sm text-slate-400 hover:text-accent-blue transition-colors">
             Sign out
           </Link>
       </div>
@@ -100,7 +100,7 @@ export default async function AdminPage() {
         )}
       </GlassCard>
       <p className="mt-6">
-        <Link href="/" className="text-accent-blue hover:underline text-sm">
+        <Link href="/" prefetch={false} className="text-accent-blue hover:underline text-sm">
           Back to home
         </Link>
       </p>

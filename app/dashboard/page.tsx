@@ -8,6 +8,7 @@ import { PROGRESS_STAGES, getProgressStageIndex } from '@/lib/progress';
 import GlassCard from '@/components/GlassCard';
 import GradientButton from '@/components/GradientButton';
 import FeedbackForm from '@/app/dashboard/FeedbackForm';
+import CheckoutButton from '@/app/dashboard/CheckoutButton';
 
 export default async function DashboardPage() {
   const session = await getSessionFromCookie();
@@ -31,7 +32,7 @@ export default async function DashboardPage() {
     <div className="max-w-2xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <h1 className="font-heading text-2xl sm:text-3xl font-bold text-slate-50">Your dashboard</h1>
-        <Link href="/api/auth/logout" className="text-sm text-slate-400 hover:text-accent-blue transition-colors">
+        <Link href="/api/auth/logout" prefetch={false} className="text-sm text-slate-400 hover:text-accent-blue transition-colors">
             Sign out
           </Link>
       </div>
@@ -70,28 +71,20 @@ export default async function DashboardPage() {
           ) : (
             <div className="flex flex-wrap items-center gap-3">
               {payment.depositStatus !== 'Paid' && canPayDeposit && (
-                <form action="/api/dashboard/checkout" method="POST">
-                  <input type="hidden" name="type" value="deposit" />
-                  <button
-                    type="submit"
-                    className="rounded-lg bg-accent-blue/90 hover:bg-accent-blue px-4 py-2.5 text-sm font-medium text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 focus-visible:ring-offset-brand-surface"
-                    aria-label="Pay €200 deposit"
-                  >
-                    Pay deposit (€200)
-                  </button>
-                </form>
+                <CheckoutButton
+                  type="deposit"
+                  label="Pay deposit (€200)"
+                  ariaLabel="Pay €200 deposit"
+                  className="rounded-lg bg-accent-blue/90 hover:bg-accent-blue px-4 py-2.5 text-sm font-medium text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 focus-visible:ring-offset-brand-surface"
+                />
               )}
               {payment.depositStatus === 'Paid' && payment.balanceStatus !== 'Paid' && canPayBalance && (
-                <form action="/api/dashboard/checkout" method="POST">
-                  <input type="hidden" name="type" value="balance" />
-                  <button
-                    type="submit"
-                    className="rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 px-4 py-2.5 text-sm font-medium text-slate-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 focus-visible:ring-offset-brand-surface"
-                    aria-label={`Pay balance ${payment.balanceFormatted}`}
-                  >
-                    Pay balance ({payment.balanceFormatted})
-                  </button>
-                </form>
+                <CheckoutButton
+                  type="balance"
+                  label={`Pay balance (${payment.balanceFormatted})`}
+                  ariaLabel={`Pay balance ${payment.balanceFormatted}`}
+                  className="rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 px-4 py-2.5 text-sm font-medium text-slate-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 focus-visible:ring-offset-brand-surface"
+                />
               )}
               {!canPayDeposit && payment.depositStatus !== 'Paid' && (
                 <p className="text-slate-500 text-sm">Payment link for your package will be sent by email.</p>
@@ -245,7 +238,7 @@ export default async function DashboardPage() {
       </GlassCard>
 
       <p className="mt-6 text-center">
-        <Link href="/" className="text-accent-blue hover:underline text-sm">Back to home</Link>
+        <Link href="/" prefetch={false} className="text-accent-blue hover:underline text-sm">Back to home</Link>
       </p>
     </div>
   );

@@ -17,6 +17,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const handleToggle = useCallback(() => setMobileOpen((prev) => !prev), []);
   const handleClose = useCallback(() => setMobileOpen(false), []);
+  const isProtectedPage = pathname?.startsWith('/dashboard') || pathname?.startsWith('/admin');
 
   return (
     <header
@@ -29,6 +30,7 @@ export default function Navbar() {
       >
         <Link
           href="/"
+          prefetch={!isProtectedPage}
           className="flex items-center gap-2.5 font-heading text-xl font-bold tracking-tight text-slate-50 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 focus-visible:ring-offset-brand-surface rounded group"
           onClick={handleClose}
         >
@@ -40,6 +42,7 @@ export default function Navbar() {
             <li key={href}>
               <Link
                 href={href}
+                prefetch={!isProtectedPage}
                 className={`text-sm font-medium transition-colors rounded px-2 py-1 ${
                   pathname === href ? 'text-accent-blue' : 'text-slate-300 hover:text-slate-50'
                 } focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 focus-visible:ring-offset-brand-surface`}
@@ -53,6 +56,7 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           <Link
             href="/contact"
+            prefetch={!isProtectedPage}
             className="hidden sm:inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-lg bg-gradient-to-r from-accent-blue to-accent-violet text-white shadow-glow-sm hover:shadow-glow transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
             Get in touch
@@ -82,6 +86,7 @@ export default function Navbar() {
             <li key={href}>
               <Link
                 href={href}
+                prefetch={!isProtectedPage}
                 className={`block py-3 px-4 rounded-lg text-sm font-medium transition-colors ${
                   pathname === href ? 'text-accent-blue bg-accent-blue/10' : 'text-slate-300 hover:text-slate-50 hover:bg-white/5'
                 }`}
@@ -92,7 +97,7 @@ export default function Navbar() {
             </li>
           ))}
           <li className="pt-2">
-            <Link href="/contact" className="block py-3 px-4 rounded-lg text-sm font-semibold bg-gradient-to-r from-accent-blue to-accent-violet text-white text-center" onClick={handleClose}>
+            <Link href="/contact" prefetch={!isProtectedPage} className="block py-3 px-4 rounded-lg text-sm font-semibold bg-gradient-to-r from-accent-blue to-accent-violet text-white text-center" onClick={handleClose}>
               Get in touch
             </Link>
           </li>

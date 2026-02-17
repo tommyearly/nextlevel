@@ -51,7 +51,9 @@ export default function DashboardLoginPage() {
               ? 'Something went wrong on our side. Check that SESSION_SECRET is set in Vercel (32+ characters, no # in the value), then try again.'
               : urlError === 'config'
                 ? 'Session not configured. Set SESSION_SECRET in Vercel (32+ characters, avoid #).'
-                : null;
+                : urlError === 'session'
+                  ? 'Your session expired or was lost. Sign in again below.'
+                  : null;
 
   return (
     <div className="max-w-md mx-auto">

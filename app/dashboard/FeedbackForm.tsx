@@ -20,6 +20,7 @@ export default function FeedbackForm({ existingFeedback, existingFeedbackAt }: P
       const res = await fetch('/api/dashboard/feedback', {
         method: 'POST',
         body: data,
+        credentials: 'include',
       });
       if (res.redirected) {
         window.location.href = res.url;

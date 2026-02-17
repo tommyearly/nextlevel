@@ -27,11 +27,12 @@ export default async function AdminLeadDetailPage({ params }: Props) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <Link
           href="/admin"
+          prefetch={false}
           className="text-sm text-slate-400 hover:text-accent-blue transition-colors"
         >
           ← Back to leads
         </Link>
-        <Link href="/api/auth/logout" className="text-sm text-slate-400 hover:text-accent-blue transition-colors">
+        <Link href="/api/auth/logout" prefetch={false} className="text-sm text-slate-400 hover:text-accent-blue transition-colors">
             Sign out
           </Link>
       </div>
