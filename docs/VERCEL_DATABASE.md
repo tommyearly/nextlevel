@@ -1,26 +1,26 @@
-# Database on Vercel (no Turso)
+# Database on Vercel
 
 On Vercel you need a **Postgres** database. SQLite (`file:./dev.db`) does not work there (no persistent disk).
 
-## Option: Vercel Postgres (easiest)
+## Supabase (via Vercel integration)
 
-1. In the **Vercel dashboard** → your project → **Storage** tab → **Create Database** → choose **Postgres**.
-2. Connect it to your project. Vercel will set **`DATABASE_URL`** for you.
-3. Redeploy. The build runs `prisma db push`, which creates the tables in your new Postgres DB.
+1. In the **Vercel dashboard** → your project → **Storage** (or **Integrations**) → connect **Supabase**.
+2. Create or link a Supabase project. Vercel will add **`POSTGRES_PRISMA_URL`** (and other `POSTGRES_*` vars) to your project.
+3. Redeploy. The build uses `POSTGRES_PRISMA_URL` when `DATABASE_URL` is not set; tables are created via `prisma db push`.
 
-No extra env vars. Admin magic link and the rest of the app will use this Postgres.
+No need to add **`DATABASE_URL`** yourself — the app uses **`POSTGRES_PRISMA_URL`** when present.
 
-## Other Postgres providers
+## Vercel Postgres
 
-You can use **Neon** or **Supabase** (free tiers):
+1. **Storage** tab → **Create Database** → **Postgres** → connect to your project.
+2. Vercel sets **`DATABASE_URL`**. Redeploy.
 
-1. Create a Postgres database and copy the connection string.
-2. In Vercel → **Settings** → **Environment Variables** → add **`DATABASE_URL`** with that URL (use the **pooled** or **transaction** URL if they give you one for serverless).
-3. Redeploy. Tables are created on first deploy via `prisma db push`.
+## Other Postgres (Neon, etc.)
+
+1. Create a Postgres DB and copy the connection string.
+2. In Vercel → **Settings** → **Environment Variables** → add **`DATABASE_URL`**.
+3. Redeploy.
 
 ## Local development
 
-- Use the same **`DATABASE_URL`** (your Vercel Postgres or Neon URL), or
-- Run Postgres locally and set **`DATABASE_URL`** to e.g. `postgresql://user:pass@localhost:5432/nextlevel`.
-
-You do **not** need Turso or VERCEL_DATABASE.md’s Turso steps.
+Set **`DATABASE_URL`** (or **`POSTGRES_PRISMA_URL`**) to your Postgres URL, e.g. the same Supabase/Neon URL or `postgresql://user:pass@localhost:5432/dbname`.

@@ -1,7 +1,10 @@
 /**
  * Prisma client singleton for Next.js (avoid multiple instances in dev).
- * Use DATABASE_URL: Postgres on Vercel (Vercel Postgres, Neon, Supabase); locally same or file for SQLite if you switch back.
+ * Use DATABASE_URL or (Vercel Supabase) POSTGRES_PRISMA_URL.
  */
+if (!process.env.DATABASE_URL && process.env.POSTGRES_PRISMA_URL) {
+  process.env.DATABASE_URL = process.env.POSTGRES_PRISMA_URL;
+}
 import { PrismaClient } from '@prisma/client';
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined };
