@@ -21,9 +21,14 @@ No need to add **`DATABASE_URL`** yourself — the app uses **`POSTGRES_PRISMA_U
 2. In Vercel → **Settings** → **Environment Variables** → add **`DATABASE_URL`**.
 3. Redeploy.
 
-## Faster builds (optional)
+## Schema changes (db push)
 
-If deploys are slow, set **`SKIP_DB_PUSH=1`** in Vercel. The build will skip `prisma db push` and finish in ~1–2 min. When you change the Prisma schema, run **`npx prisma db push`** once locally (with `DATABASE_URL` or `POSTGRES_PRISMA_URL` pointing at your Supabase DB), then deploy as usual.
+**`prisma db push` is not run during the Vercel build** (the Supabase connection from the build often times out). So:
+
+- **Normal deploys:** Build only runs Next.js — fast.
+- **When you change the Prisma schema:** Run **`npx prisma db push`** once **locally** (with `POSTGRES_PRISMA_URL` or `DATABASE_URL` in `.env` pointing at your Supabase DB), then commit and deploy. Tables will already exist in Supabase.
+
+To run db push during the build (not recommended unless you accept possible timeouts), set **`RUN_DB_PUSH=1`** in Vercel.
 
 ## Local development
 
