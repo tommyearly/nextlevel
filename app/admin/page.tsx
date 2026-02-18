@@ -1,21 +1,23 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { getSessionFromCookie } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { getPaymentBreakdown } from '@/lib/pricing';
 import GlassCard from '@/components/GlassCard';
 
 export default async function AdminPage() {
-  const session = await getSessionFromCookie();
-  if (!session || session.role !== 'admin') {
-    return null;
-  }
+  try {
+    const session = await getSessionFromCookie();
+    if (!session || session.role !== 'admin') {
+      return null;
+    }
 
-  const leads = await prisma.lead.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: { _count: { select: { ticketMessages: true } } },
-  });
+    const leads = await prisma.lead.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { _count: { select: { ticketMessages: true } } },
+    });
 
-  return (
+    return (
     <div className="max-w-4xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <h1 className="font-heading text-2xl sm:text-3xl font-bold text-slate-50">
@@ -105,5 +107,9 @@ export default async function AdminPage() {
         </Link>
       </p>
     </div>
-  );
+    );
+  } catch (err) {
+    console.error('Admin page error:', err);
+    redirect('/admin/login?error=server');
+  }
 }

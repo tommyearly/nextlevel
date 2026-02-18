@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import GlassCard from '@/components/GlassCard';
 import GradientButton from '@/components/GradientButton';
 
@@ -9,6 +10,12 @@ export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [urlError, setUrlError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    setUrlError(searchParams.get('error'));
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,10 +40,20 @@ export default function AdminLoginPage() {
     }
   };
 
+  const serverErrorText =
+    urlError === 'server'
+      ? 'The admin page could not load (e.g. database schema out of date). In Supabase → SQL Editor run: ALTER TABLE "Lead" ADD COLUMN IF NOT EXISTS "totalPaidCents" INTEGER NOT NULL DEFAULT 0; then try again.'
+      : null;
+
   return (
     <div className="max-w-md mx-auto">
       <h1 className="font-heading text-2xl font-bold text-slate-50 text-center mb-2">Admin sign in</h1>
       <p className="text-slate-400 text-sm text-center mb-8">Enter the admin email. A one-time login link will be sent.</p>
+      {serverErrorText && (
+        <p className="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-200 text-sm">
+          {serverErrorText}
+        </p>
+      )}
       <GlassCard className="p-6">
         {status === 'sent' ? (
           <p className="text-slate-300 text-center">Check your inbox. Click the link to sign in. Link expires in 30 minutes.</p>

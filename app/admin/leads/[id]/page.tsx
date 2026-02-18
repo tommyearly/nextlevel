@@ -120,6 +120,34 @@ export default async function AdminLeadDetailPage({ params }: Props) {
             </dd>
           </div>
         </dl>
+        {(() => {
+          const receipts = (lead.paymentReceipts as Array<{ receiptUrl: string; amountCents: number; paymentType: string; paidAt: string }> | null) ?? [];
+          if (receipts.length === 0) return null;
+          return (
+            <div className="mt-4 pt-4 border-t border-white/5">
+              <h3 className="font-heading text-sm font-semibold text-slate-300 mb-2">Stripe receipts</h3>
+              <p className="text-slate-500 text-xs mb-2">Open and use the browser print dialog to save as PDF. Links expire after ~30 days.</p>
+              <ul className="space-y-2">
+                {receipts.map((r, i) => (
+                  <li key={i}>
+                    <a
+                      href={r.receiptUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-accent-blue hover:underline text-sm"
+                    >
+                      View receipt — €{(r.amountCents / 100).toFixed(2)} ({r.paymentType})
+                      <span className="text-xs" aria-hidden>↗</span>
+                    </a>
+                    <span className="text-slate-500 text-xs ml-2">
+                      {new Date(r.paidAt).toLocaleString('en-IE')}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })()}
         <form
           action={`/api/admin/leads/${lead.id}/payment`}
           method="POST"

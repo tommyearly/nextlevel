@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS "Lead" (
   "customerFeedbackAt" TIMESTAMP(3),
   "packageChangeRequestedAt" TIMESTAMP(3),
   "packageChangeFrom" TEXT,
+  "paymentReceipts" JSONB,
   CONSTRAINT "Lead_pkey" PRIMARY KEY ("id")
 );
 
@@ -51,5 +52,6 @@ ALTER TABLE "TicketMessage" ADD CONSTRAINT "TicketMessage_leadId_fkey"
 
 CREATE INDEX IF NOT EXISTS "TicketMessage_leadId_idx" ON "TicketMessage"("leadId");
 
--- If Lead table already existed before totalPaidCents was added, run this once in SQL Editor:
+-- If Lead table already existed before these columns were added, run once in SQL Editor:
 -- ALTER TABLE "Lead" ADD COLUMN IF NOT EXISTS "totalPaidCents" INTEGER NOT NULL DEFAULT 0;
+-- ALTER TABLE "Lead" ADD COLUMN IF NOT EXISTS "paymentReceipts" JSONB;

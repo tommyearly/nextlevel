@@ -80,6 +80,36 @@ export async function POST(request: NextRequest) {
         if (adminEmail && adminEmail !== lead.email) {
           await sendPaymentReceiptEmail(adminEmail, { ...receiptData, leadName: '' }, { recipientType: 'admin' });
         }
+
+        let receiptUrl: string | null = null;
+        try {
+          const fullSession = await stripe.checkout.sessions.retrieve(session.id, {
+            expand: ['payment_intent.latest_charge'],
+          });
+          const pi = fullSession.payment_intent as Stripe.PaymentIntent | null;
+          const charge = pi && typeof pi === 'object' && pi.latest_charge;
+          const chargeObj = typeof charge === 'object' && charge && 'receipt_url' in charge ? charge : null;
+          if (chargeObj?.receipt_url) receiptUrl = chargeObj.receipt_url as string;
+        } catch (e) {
+          console.error('Could not fetch Stripe receipt URL:', e);
+        }
+
+        if (receiptUrl) {
+          const existing = (lead.paymentReceipts as Array<{ receiptUrl: string; amountCents: number; paymentType: string; paidAt: string }>) ?? [];
+          const next = [
+            ...existing,
+            {
+              receiptUrl,
+              amountCents,
+              paymentType,
+              paidAt: new Date().toISOString(),
+            },
+          ];
+          await prisma.lead.update({
+            where: { id: leadId },
+            data: { paymentReceipts: next },
+          });
+        }
       }
     }
   }

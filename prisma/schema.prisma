@@ -33,6 +33,7 @@ model Lead {
   // Package change request (customer changed package in dashboard)
   packageChangeRequestedAt DateTime?
   packageChangeFrom   String?   // packageId before change
+  paymentReceipts     Json?    // Stripe receipt URLs [{ receiptUrl, amountCents, paymentType, paidAt }]; open link and print to PDF
   ticketMessages      TicketMessage[]
 }
 
