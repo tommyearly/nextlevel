@@ -22,3 +22,38 @@ export function getPackageIdFromFormValue(formValue: string | null | undefined):
   const found = PACKAGE_FORM_OPTIONS.find((o) => o.value === formValue);
   return found?.id ?? null;
 }
+
+/** Tier order for upgrade-only rule: starter < growth < premium. Custom has no tier. */
+const PACKAGE_TIER_ORDER: Record<string, number> = {
+  starter: 0,
+  growth: 1,
+  premium: 2,
+  custom: -1,
+};
+
+export function getPackageTier(packageId: string | null | undefined): number {
+  if (!packageId) return -1;
+  return PACKAGE_TIER_ORDER[packageId] ?? -1;
+}
+
+/** True if newPackage is a higher tier than currentPackage (upgrade only). */
+export function isPackageUpgrade(
+  currentPackageId: string | null | undefined,
+  newPackageId: string | null | undefined
+): boolean {
+  const current = getPackageTier(currentPackageId);
+  const next = getPackageTier(newPackageId);
+  if (current < 0 || next < 0) return false;
+  return next > current;
+}
+
+/** True if newPackage is same or lower tier (downgrade or no change). */
+export function isPackageDowngradeOrSame(
+  currentPackageId: string | null | undefined,
+  newPackageId: string | null | undefined
+): boolean {
+  const current = getPackageTier(currentPackageId);
+  const next = getPackageTier(newPackageId);
+  if (current < 0 || next < 0) return true;
+  return next <= current;
+}

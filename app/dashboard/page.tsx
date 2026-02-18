@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getSessionFromCookie } from '@/lib/auth';
 import { prisma } from '@/lib/db';
+import { getPackageTier } from '@/lib/packages';
 import { getPackagePricing, getPaymentBreakdown } from '@/lib/pricing';
 import { getCheckoutPriceId, hasStripeConfig } from '@/lib/stripe';
 import { PROGRESS_STAGES, getProgressStageIndex } from '@/lib/progress';
@@ -166,30 +167,46 @@ export default async function DashboardPage() {
         <h2 className="font-heading text-lg font-semibold text-slate-50 mb-2">Change package</h2>
         <p className="text-slate-400 text-sm mb-4">
           {lead.packageId === 'custom'
-            ? 'Choose a fixed package below and we\'ll update your details. Payment status will update automatically when you pay (Stripe coming soon).'
-            : 'Select a different package below. Your dashboard and any payment status will update automatically.'}
+            ? 'Choose a fixed package below and we\'ll update your details. Payment status will update automatically when you pay.'
+            : 'You can only upgrade to a higher tier. Your deposit stays marked as paid; any extra balance for the new package will be shown.'}
         </p>
-        <form action="/api/dashboard/package" method="POST" className="flex flex-wrap items-end gap-3">
-          <label className="block">
-            <span className="sr-only">Package</span>
-            <select
-              name="packageId"
-              defaultValue={lead.packageId === 'custom' ? 'starter' : lead.packageId}
-              className="rounded-lg border border-white/10 bg-brand-surface px-3 py-2 text-slate-200 text-sm focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue min-w-[200px]"
-              aria-label="Select package"
-            >
-              <option value="starter">Starter — €900</option>
-              <option value="growth">Growth — €1,200</option>
-              <option value="premium">Premium — €2,000</option>
-            </select>
-          </label>
-          <button
-            type="submit"
-            className="rounded-lg bg-accent-blue/90 hover:bg-accent-blue px-4 py-2 text-sm font-medium text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 focus-visible:ring-offset-brand-surface"
-          >
-            Update package
-          </button>
-        </form>
+        {(() => {
+          const currentTier = getPackageTier(lead.packageId);
+          const upgradeOptions = [
+            { id: 'starter' as const, label: 'Starter — €900' },
+            { id: 'growth' as const, label: 'Growth — €1,200' },
+            { id: 'premium' as const, label: 'Premium — €2,000' },
+          ].filter((p) => getPackageTier(p.id) >= currentTier);
+          const canUpgrade = upgradeOptions.length > 1 || (lead.packageId === 'custom' && upgradeOptions.length >= 1);
+          const defaultVal = lead.packageId === 'custom' ? 'starter' : (upgradeOptions[0]?.id ?? lead.packageId);
+          return canUpgrade ? (
+            <form action="/api/dashboard/package" method="POST" className="flex flex-wrap items-end gap-3">
+              <label className="block">
+                <span className="sr-only">Package</span>
+                <select
+                  name="packageId"
+                  defaultValue={defaultVal}
+                  className="rounded-lg border border-white/10 bg-brand-surface px-3 py-2 text-slate-200 text-sm focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue min-w-[200px]"
+                  aria-label="Select package (upgrade only)"
+                >
+                  {upgradeOptions.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button
+                type="submit"
+                className="rounded-lg bg-accent-blue/90 hover:bg-accent-blue px-4 py-2 text-sm font-medium text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 focus-visible:ring-offset-brand-surface"
+              >
+                Update package
+              </button>
+            </form>
+          ) : (
+            <p className="text-slate-500 text-sm">You&apos;re on the highest tier (Premium).</p>
+          );
+        })()}
 
         <div className="mt-6 pt-6 border-t border-white/5">
           <p className="text-slate-400 text-sm mb-1">Ticket ID</p>

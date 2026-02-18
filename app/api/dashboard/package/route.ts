@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionFromRequest } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-import { PACKAGE_FORM_OPTIONS } from '@/lib/packages';
+import { PACKAGE_FORM_OPTIONS, isPackageDowngradeOrSame } from '@/lib/packages';
 
 const ALLOWED_IDS = ['starter', 'growth', 'premium'] as const;
 
@@ -28,6 +28,14 @@ export async function POST(request: NextRequest) {
   }
 
   const isChange = lead.packageId !== packageId;
+  if (isChange && isPackageDowngradeOrSame(lead.packageId, packageId)) {
+    return NextResponse.json(
+      { error: 'You can only upgrade to a higher tier. Downgrades are not allowed.' },
+      { status: 400 }
+    );
+  }
+
+  const isUpgrade = isChange && !isPackageDowngradeOrSame(lead.packageId, packageId);
   await prisma.lead.update({
     where: { id: lead.id },
     data: {
@@ -37,6 +45,10 @@ export async function POST(request: NextRequest) {
         packageChangeFrom: lead.packageId,
         packageChangeRequestedAt: new Date(),
       }),
+      // On upgrade: keep deposit as paid but set status to paid_deposit so balance reflects new package (balance owing)
+      ...(isUpgrade && lead.paymentStatus === 'paid_full'
+        ? { paymentStatus: 'paid_deposit' as const }
+        : {}),
     },
   });
 
