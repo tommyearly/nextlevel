@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type Stripe from 'stripe';
 import { getSessionFromRequest } from '@/lib/auth';
 import { prisma } from '@/lib/db';
+import { getPackagePricing } from '@/lib/pricing';
 import { stripe, getCheckoutPriceId } from '@/lib/stripe';
 
 export async function POST(request: NextRequest) {
@@ -31,22 +33,51 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
   }
 
-  const priceId = getCheckoutPriceId(lead.packageId, type);
-  if (!priceId) {
-    return NextResponse.json(
-      { error: `No Stripe price configured for ${lead.packageId} ${type}. Add STRIPE_PRICE_${(lead.packageId ?? '').toUpperCase()}_${type.toUpperCase()} to .env` },
-      { status: 400 }
-    );
-  }
-
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? request.nextUrl?.origin ?? 'http://localhost:3000';
   const successUrl = `${baseUrl}/dashboard?paid=1`;
   const cancelUrl = `${baseUrl}/dashboard`;
 
+  let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[];
+
+  if (type === 'deposit') {
+    const priceId = getCheckoutPriceId(lead.packageId, 'deposit');
+    if (!priceId) {
+      return NextResponse.json(
+        { error: `No Stripe price configured for ${lead.packageId} deposit. Add STRIPE_PRICE_${(lead.packageId ?? '').toUpperCase()}_DEPOSIT to .env` },
+        { status: 400 }
+      );
+    }
+    lineItems = [{ price: priceId, quantity: 1 }];
+  } else {
+    const pricing = getPackagePricing(lead.packageId);
+    const totalCents = pricing.total != null ? Math.round(pricing.total * 100) : null;
+    const totalPaidCents = lead.totalPaidCents ?? 0;
+    const amountOwingCents = totalCents != null ? Math.max(0, totalCents - totalPaidCents) : 0;
+    if (amountOwingCents <= 0) {
+      return NextResponse.json(
+        { error: 'No balance owing. You have already paid in full for this package.' },
+        { status: 400 }
+      );
+    }
+    lineItems = [
+      {
+        price_data: {
+          currency: 'eur',
+          unit_amount: amountOwingCents,
+          product_data: {
+            name: `${pricing.label} — balance`,
+            description: `${lead.packageLabel}. Remaining amount due before launch.`,
+          },
+        },
+        quantity: 1,
+      },
+    ];
+  }
+
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: 'payment',
     customer_email: lead.email,
-    line_items: [{ price: priceId, quantity: 1 }],
+    line_items: lineItems,
     success_url: successUrl,
     cancel_url: cancelUrl,
     metadata: {

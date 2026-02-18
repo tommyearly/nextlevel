@@ -22,6 +22,7 @@ model Lead {
   // Optional for Stripe phase
   stripeCustomerId String?
   paymentStatus   String? // e.g. unpaid | paid_deposit | paid_full
+  totalPaidCents  Int    @default(0) // Total paid in cents (so balance owing = package total - totalPaid after upgrade)
   // Project progress (admin updates, customer sees in dashboard)
   projectUrl      String?   // Staging/preview URL for customer to check progress
   progressStage   String?   // e.g. brief_received, design_started, live

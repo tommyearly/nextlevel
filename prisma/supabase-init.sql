@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS "Lead" (
   "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "stripeCustomerId" TEXT,
   "paymentStatus" TEXT,
+  "totalPaidCents" INTEGER NOT NULL DEFAULT 0,
   "projectUrl" TEXT,
   "progressStage" TEXT,
   "progressUpdatedAt" TIMESTAMP(3),

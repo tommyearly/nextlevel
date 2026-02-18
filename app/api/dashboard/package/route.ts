@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionFromRequest } from '@/lib/auth';
 import { prisma } from '@/lib/db';
+import { getPackagePricing } from '@/lib/pricing';
 import { PACKAGE_FORM_OPTIONS, isPackageDowngradeOrSame } from '@/lib/packages';
 
 const ALLOWED_IDS = ['starter', 'growth', 'premium'] as const;
@@ -36,6 +37,14 @@ export async function POST(request: NextRequest) {
   }
 
   const isUpgrade = isChange && !isPackageDowngradeOrSame(lead.packageId, packageId);
+  const currentPaidCents = lead.totalPaidCents ?? 0;
+  const oldPricing = getPackagePricing(lead.packageId);
+  const oldTotalCents = oldPricing.total != null ? Math.round(oldPricing.total * 100) : 0;
+  const totalPaidCentsOnUpgrade =
+    isUpgrade && lead.paymentStatus === 'paid_full' && currentPaidCents < oldTotalCents
+      ? oldTotalCents
+      : undefined;
+
   await prisma.lead.update({
     where: { id: lead.id },
     data: {
@@ -49,6 +58,7 @@ export async function POST(request: NextRequest) {
       ...(isUpgrade && lead.paymentStatus === 'paid_full'
         ? { paymentStatus: 'paid_deposit' as const }
         : {}),
+      ...(totalPaidCentsOnUpgrade != null ? { totalPaidCents: totalPaidCentsOnUpgrade } : {}),
     },
   });
 

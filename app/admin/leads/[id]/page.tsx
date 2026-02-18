@@ -20,7 +20,7 @@ export default async function AdminLeadDetailPage({ params }: Props) {
   });
   if (!lead) notFound();
 
-  const payment = getPaymentBreakdown(lead.packageId, lead.paymentStatus);
+  const payment = getPaymentBreakdown(lead.packageId, lead.paymentStatus, lead.totalPaidCents);
 
   return (
     <div className="max-w-2xl mx-auto">

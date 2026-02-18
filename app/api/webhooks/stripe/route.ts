@@ -46,11 +46,13 @@ export async function POST(request: NextRequest) {
 
     if (leadId && (paymentType === 'deposit' || paymentType === 'balance')) {
       const paymentStatus = paymentType === 'deposit' ? 'paid_deposit' : 'paid_full';
+      const amountTotal = typeof session.amount_total === 'number' ? session.amount_total : 0;
       try {
         await prisma.lead.update({
           where: { id: leadId },
           data: {
             paymentStatus,
+            totalPaidCents: { increment: amountTotal },
             ...(session.customer && typeof session.customer === 'string'
               ? { stripeCustomerId: session.customer }
               : {}),

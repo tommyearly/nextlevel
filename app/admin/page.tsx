@@ -42,7 +42,7 @@ export default async function AdminPage() {
               </thead>
               <tbody>
                 {leads.map((lead) => {
-                  const payment = getPaymentBreakdown(lead.packageId, lead.paymentStatus);
+                  const payment = getPaymentBreakdown(lead.packageId, lead.paymentStatus, lead.totalPaidCents);
                   const paymentLabel =
                     payment.depositStatus === 'Paid' && payment.balanceStatus === 'Paid'
                       ? 'Paid in full'

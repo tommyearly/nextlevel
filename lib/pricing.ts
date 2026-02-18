@@ -46,18 +46,36 @@ export type PaymentBreakdown = {
   balanceFormatted: string;
   balanceStatus: 'Paid' | 'Unpaid';
   totalFormatted: string;
+  totalPaidFormatted: string;
 };
+
+/** Effective total paid in cents (from DB or inferred from paymentStatus for legacy leads). */
+function effectiveTotalPaidCents(
+  packageId: string | null | undefined,
+  paymentStatus: string | null | undefined,
+  totalPaidCents: number | null | undefined
+): number {
+  if (totalPaidCents != null && totalPaidCents > 0) return totalPaidCents;
+  if (paymentStatus === 'paid_full') {
+    const total = PACKAGE_PRICES[(packageId ?? '') as PackageId] ?? null;
+    return total != null ? total * 100 : 0;
+  }
+  if (paymentStatus === 'paid_deposit') return DEPOSIT_EURO * 100;
+  return 0;
+}
 
 export function getPaymentBreakdown(
   packageId: string | null | undefined,
-  paymentStatus: string | null | undefined
+  paymentStatus: string | null | undefined,
+  totalPaidCents?: number | null
 ): PaymentBreakdown {
   const pricing = getPackagePricing(packageId);
-  const depositPaid =
-    paymentStatus === 'paid_deposit' || paymentStatus === 'paid_full';
-  const balancePaid = paymentStatus === 'paid_full';
+  const totalCents = pricing.total != null ? pricing.total * 100 : null;
+  const paid = effectiveTotalPaidCents(packageId, paymentStatus, totalPaidCents ?? 0);
+  const depositPaid = paid >= DEPOSIT_EURO * 100;
+  const balancePaid = totalCents !== null && paid >= totalCents;
   const balanceAmount =
-    pricing.total !== null ? pricing.total - DEPOSIT_EURO : null;
+    totalCents !== null ? Math.max(0, (totalCents - paid) / 100) : null;
   const balanceFormatted =
     balanceAmount !== null
       ? `€${balanceAmount.toLocaleString('en-IE')}`
@@ -65,9 +83,10 @@ export function getPaymentBreakdown(
   return {
     depositAmount: DEPOSIT_EURO,
     depositStatus: depositPaid ? 'Paid' : 'Unpaid',
-    balanceAmount,
+    balanceAmount: balanceAmount !== null && balanceAmount > 0 ? balanceAmount : null,
     balanceFormatted,
     balanceStatus: balancePaid ? 'Paid' : 'Unpaid',
     totalFormatted: pricing.totalFormatted,
+    totalPaidFormatted: `€${(paid / 100).toLocaleString('en-IE')}`,
   };
 }

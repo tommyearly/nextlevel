@@ -23,9 +23,9 @@ export default async function DashboardPage() {
   if (!lead) redirect('/dashboard/login');
 
   const pricing = getPackagePricing(lead.packageId);
-  const payment = getPaymentBreakdown(lead.packageId, lead.paymentStatus);
+  const payment = getPaymentBreakdown(lead.packageId, lead.paymentStatus, lead.totalPaidCents);
   const canPayDeposit = hasStripeConfig() && getCheckoutPriceId(lead.packageId, 'deposit');
-  const canPayBalance = hasStripeConfig() && getCheckoutPriceId(lead.packageId, 'balance');
+  const canPayBalance = hasStripeConfig() && payment.balanceAmount != null && payment.balanceAmount > 0;
   const currentStageIndex = getProgressStageIndex(lead.progressStage);
   const currentStage = lead.progressStage ? PROGRESS_STAGES.find((s) => s.id === lead.progressStage) : null;
 
