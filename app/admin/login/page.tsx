@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import GlassCard from '@/components/GlassCard';
 import GradientButton from '@/components/GradientButton';
 
-export default function AdminLoginPage() {
+function AdminLoginForm() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
@@ -82,5 +82,13 @@ export default function AdminLoginPage() {
         <Link href="/" className="text-accent-blue hover:underline text-sm">Back to home</Link>
       </p>
     </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={<div className="max-w-md mx-auto animate-pulse rounded-lg h-64 bg-white/5" />}>
+      <AdminLoginForm />
+    </Suspense>
   );
 }

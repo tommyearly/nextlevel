@@ -5,6 +5,8 @@ import { prisma } from '@/lib/db';
 import { getPaymentBreakdown } from '@/lib/pricing';
 import GlassCard from '@/components/GlassCard';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminPage() {
   try {
     const session = await getSessionFromCookie();
