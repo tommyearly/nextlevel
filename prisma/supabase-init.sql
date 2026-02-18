@@ -50,3 +50,6 @@ ALTER TABLE "TicketMessage" ADD CONSTRAINT "TicketMessage_leadId_fkey"
   FOREIGN KEY ("leadId") REFERENCES "Lead"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 CREATE INDEX IF NOT EXISTS "TicketMessage_leadId_idx" ON "TicketMessage"("leadId");
+
+-- If Lead table already existed before totalPaidCents was added, run this once in SQL Editor:
+-- ALTER TABLE "Lead" ADD COLUMN IF NOT EXISTS "totalPaidCents" INTEGER NOT NULL DEFAULT 0;
