@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { prisma } from '@/lib/db';
 import { stripe } from '@/lib/stripe';
+import { sendPaymentReceiptEmail } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -58,6 +59,25 @@ export async function POST(request: NextRequest) {
       } catch (err) {
         console.error('Failed to update lead payment status:', err);
         return NextResponse.json({ error: 'Database update failed' }, { status: 500 });
+      }
+
+      const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+      if (lead) {
+        const amountCents = session.amount_total ?? 0;
+        const amountFormatted = `€${(amountCents / 100).toFixed(2)}`;
+        const receiptData = {
+          leadName: lead.name,
+          leadEmail: lead.email,
+          packageLabel: lead.packageLabel,
+          paymentType: paymentType as 'deposit' | 'balance',
+          amountFormatted,
+          date: new Date().toLocaleDateString('en-IE', { dateStyle: 'long' }),
+        };
+        await sendPaymentReceiptEmail(lead.email, receiptData);
+        const adminEmail = process.env.ADMIN_EMAIL;
+        if (adminEmail && adminEmail !== lead.email) {
+          await sendPaymentReceiptEmail(adminEmail, { ...receiptData, leadName: '' }, { recipientType: 'admin' });
+        }
       }
     }
   }
