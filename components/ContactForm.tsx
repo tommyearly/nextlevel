@@ -31,7 +31,8 @@ export default function ContactForm({ defaultPackage }: ContactFormProps) {
   useEffect(() => {
     if (!siteKey || !recaptchaContainerRef.current) return;
     const callbackName = 'onRecaptchaLoad';
-    (window as Record<string, () => void>)[callbackName] = () => {
+    const win = window as unknown as Record<string, () => void>;
+    win[callbackName] = () => {
       if (recaptchaContainerRef.current && window.grecaptcha) {
         widgetIdRef.current = window.grecaptcha.render(recaptchaContainerRef.current, { sitekey: siteKey });
       }
@@ -42,7 +43,7 @@ export default function ContactForm({ defaultPackage }: ContactFormProps) {
     script.defer = true;
     document.head.appendChild(script);
     return () => {
-      delete (window as Record<string, () => void>)[callbackName];
+      delete win[callbackName];
     };
   }, [siteKey]);
 
