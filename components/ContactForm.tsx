@@ -34,7 +34,10 @@ export default function ContactForm({ defaultPackage }: ContactFormProps) {
     const win = window as unknown as Record<string, () => void>;
     win[callbackName] = () => {
       if (recaptchaContainerRef.current && window.grecaptcha) {
-        widgetIdRef.current = window.grecaptcha.render(recaptchaContainerRef.current, { sitekey: siteKey });
+        widgetIdRef.current = window.grecaptcha.render(recaptchaContainerRef.current, {
+          sitekey: siteKey,
+          theme: 'dark',
+        });
       }
     };
     const script = document.createElement('script');
