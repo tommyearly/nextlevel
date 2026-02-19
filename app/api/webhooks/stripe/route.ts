@@ -67,19 +67,6 @@ export async function POST(request: NextRequest) {
       if (lead) {
         const amountCents = session.amount_total ?? 0;
         const amountFormatted = `€${(amountCents / 100).toFixed(2)}`;
-        const receiptData = {
-          leadName: lead.name,
-          leadEmail: lead.email,
-          packageLabel: lead.packageLabel,
-          paymentType: paymentType as 'deposit' | 'balance',
-          amountFormatted,
-          date: new Date().toLocaleDateString('en-IE', { dateStyle: 'long' }),
-        };
-        await sendPaymentReceiptEmail(lead.email, receiptData);
-        const adminEmail = process.env.ADMIN_EMAIL;
-        if (adminEmail && adminEmail !== lead.email) {
-          await sendPaymentReceiptEmail(adminEmail, { ...receiptData, leadName: '' }, { recipientType: 'admin' });
-        }
 
         let receiptUrl: string | null = null;
         try {
@@ -92,6 +79,21 @@ export async function POST(request: NextRequest) {
           if (chargeObj?.receipt_url) receiptUrl = chargeObj.receipt_url as string;
         } catch (e) {
           console.error('Could not fetch Stripe receipt URL:', e);
+        }
+
+        const receiptData = {
+          leadName: lead.name,
+          leadEmail: lead.email,
+          packageLabel: lead.packageLabel,
+          paymentType: paymentType as 'deposit' | 'balance',
+          amountFormatted,
+          date: new Date().toLocaleDateString('en-IE', { dateStyle: 'long' }),
+          receiptUrl: receiptUrl ?? undefined,
+        };
+        await sendPaymentReceiptEmail(lead.email, receiptData);
+        const adminEmail = process.env.ADMIN_EMAIL;
+        if (adminEmail && adminEmail !== lead.email) {
+          await sendPaymentReceiptEmail(adminEmail, { ...receiptData, leadName: '' }, { recipientType: 'admin' });
         }
 
         if (receiptUrl) {
