@@ -21,7 +21,7 @@ const MAGIC_LINK_HTML_TEMPLATE = `<!DOCTYPE html>
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 480px; background-color:#111827; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
           <tr>
             <td style="padding: 32px 28px;">
-              <h1 style="margin:0 0 8px 0; font-size: 22px; font-weight: 700; color:#f8fafc; letter-spacing: -0.02em;">Next Level Web</h1>
+              <table role="presentation" cellspacing="0" cellpadding="0" style="margin-bottom: 8px;"><tr><td style="vertical-align: middle; padding-right: 10px;"><img src="{{LOGO_URL}}" width="32" height="32" alt="" style="display: block; border: 0;" /></td><td style="vertical-align: middle;"><h1 style="margin:0; font-size: 22px; font-weight: 700; color:#f8fafc; letter-spacing: -0.02em;">Next Level Web</h1></td></tr></table>
               <p style="margin:0 0 24px 0; font-size: 14px; color:#94a3b8;">Your login link</p>
               <p style="margin:0 0 16px 0; font-size: 15px; line-height: 1.5; color:#f8fafc;">Use the link below to sign in. This link expires in 30 minutes and can only be used once.</p>
               <p style="margin:0 0 24px 0;">
@@ -124,7 +124,9 @@ export async function sendMagicLinkEmail(to: string, magicLinkUrl: string): Prom
   if (!resend) {
     return { ok: false, message: 'RESEND_API_KEY not set' };
   }
-  const html = MAGIC_LINK_HTML_TEMPLATE.replace(/\{\{MAGIC_LINK_URL\}\}/g, magicLinkUrl);
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextlevelweb.ie';
+  const logoUrl = `${baseUrl}/icon-large.png`;
+  const html = MAGIC_LINK_HTML_TEMPLATE.replace(/\{\{MAGIC_LINK_URL\}\}/g, magicLinkUrl).replace(/\{\{LOGO_URL\}\}/g, logoUrl);
   const { data, error } = await resend.emails.send({
     from: FROM,
     to: [to],
