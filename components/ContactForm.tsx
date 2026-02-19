@@ -7,7 +7,10 @@ import GradientButton from './GradientButton';
 declare global {
   interface Window {
     grecaptcha?: {
-      render: (container: HTMLElement, opts: { sitekey: string }) => number;
+      render: (
+        container: HTMLElement,
+        opts: { sitekey: string; theme?: 'light' | 'dark'; size?: 'normal' | 'compact' }
+      ) => number;
       getResponse: (widgetId?: number) => string;
       reset: (widgetId?: number) => void;
     };
