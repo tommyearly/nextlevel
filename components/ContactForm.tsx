@@ -1,8 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { PACKAGE_FORM_OPTIONS, getPackageOptionValue } from '@/lib/packages';
 import GradientButton from './GradientButton';
+
+declare global {
+  interface Window {
+    grecaptcha?: {
+      render: (container: HTMLElement, opts: { sitekey: string }) => number;
+      getResponse: (widgetId?: number) => string;
+      reset: (widgetId?: number) => void;
+    };
+  }
+}
 
 type ContactFormProps = {
   /** Package id from URL (?package=starter etc.) — pre-selects the package dropdown */
@@ -12,26 +22,58 @@ type ContactFormProps = {
 export default function ContactForm({ defaultPackage }: ContactFormProps) {
   const initialPackageValue = getPackageOptionValue(defaultPackage);
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [captchaError, setCaptchaError] = useState(false);
+  const recaptchaContainerRef = useRef<HTMLDivElement>(null);
+  const widgetIdRef = useRef<number | null>(null);
+
+  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? '';
+
+  useEffect(() => {
+    if (!siteKey || !recaptchaContainerRef.current) return;
+    const callbackName = 'onRecaptchaLoad';
+    (window as Record<string, () => void>)[callbackName] = () => {
+      if (recaptchaContainerRef.current && window.grecaptcha) {
+        widgetIdRef.current = window.grecaptcha.render(recaptchaContainerRef.current, { sitekey: siteKey });
+      }
+    };
+    const script = document.createElement('script');
+    script.src = `https://www.google.com/recaptcha/api.js?onload=${callbackName}&render=explicit`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+    return () => {
+      delete (window as Record<string, () => void>)[callbackName];
+    };
+  }, [siteKey]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setCaptchaError(false);
+    const token = siteKey && window.grecaptcha ? window.grecaptcha.getResponse(widgetIdRef.current ?? undefined) : '';
+    if (siteKey && !token) {
+      setCaptchaError(true);
+      return;
+    }
     setStatus('sending');
     const form = e.currentTarget;
     const data = new FormData(form);
-    const obj = Object.fromEntries(data.entries());
+    const obj = Object.fromEntries(data.entries()) as Record<string, string>;
     try {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(obj),
+        body: JSON.stringify({ ...obj, recaptchaToken: token || undefined }),
       });
-      const data = await res.json().catch(() => ({}));
+      const resData = await res.json().catch(() => ({}));
       if (!res.ok) {
         setStatus('error');
         return;
       }
       setStatus('sent');
       form.reset();
+      if (window.grecaptcha && widgetIdRef.current !== null) {
+        window.grecaptcha.reset(widgetIdRef.current);
+      }
     } catch {
       setStatus('error');
     }
@@ -113,10 +155,20 @@ export default function ContactForm({ defaultPackage }: ContactFormProps) {
           disabled={status === 'sending'}
         />
       </label>
+      {siteKey && (
+        <div className="mt-6">
+          <div ref={recaptchaContainerRef} className="inline-block" aria-label="reCAPTCHA" />
+        </div>
+      )}
       <p className="mt-6 text-slate-500 text-xs">
           By submitting you agree to a €200 deposit to secure your project; we&apos;ll send a payment link to complete.
         </p>
       <div className="mt-6 flex flex-col sm:flex-row items-center gap-4">
+        {captchaError && (
+          <p className="text-amber-400 text-sm font-medium" role="alert">
+            Please complete the &quot;I&apos;m not a robot&quot; check before sending.
+          </p>
+        )}
         <GradientButton type="submit" size="lg" disabled={status === 'sending'} ariaLabel="Send message">
           {status === 'sending' ? 'Sending...' : 'Send message'}
         </GradientButton>

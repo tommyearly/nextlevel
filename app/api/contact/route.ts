@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db';
 import { getPackageIdFromFormValue } from '@/lib/packages';
 import { createMagicLink } from '@/lib/magic-link';
 import { sendMagicLinkEmail, sendContactCopyEmail } from '@/lib/email';
+import { verifyRecaptcha } from '@/lib/recaptcha';
 
 const ADMIN_EMAIL = 'hello@nextlevelweb.ie';
 
@@ -11,12 +12,20 @@ const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, email, company, message, package: packageFormValue } = body;
+    const { name, email, company, message, package: packageFormValue, recaptchaToken } = body;
     if (!name || !email || !message) {
       return NextResponse.json(
         { error: 'Name, email, and message are required' },
         { status: 400 }
       );
+    }
+    if (process.env.RECAPTCHA_SECRET_KEY) {
+      if (!recaptchaToken || !(await verifyRecaptcha(recaptchaToken))) {
+        return NextResponse.json(
+          { error: 'Captcha verification failed. Please try again.' },
+          { status: 400 }
+        );
+      }
     }
     const packageId = getPackageIdFromFormValue(packageFormValue) ?? 'custom';
     const packageLabel = typeof packageFormValue === 'string' ? packageFormValue : 'Custom';
