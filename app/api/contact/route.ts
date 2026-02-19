@@ -2,7 +2,9 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getPackageIdFromFormValue } from '@/lib/packages';
 import { createMagicLink } from '@/lib/magic-link';
-import { sendMagicLinkEmail } from '@/lib/email';
+import { sendMagicLinkEmail, sendContactCopyEmail } from '@/lib/email';
+
+const ADMIN_EMAIL = 'hello@nextlevelweb.ie';
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
 
@@ -33,6 +35,14 @@ export async function POST(request: Request) {
     const token = await createMagicLink(lead.email, 'customer');
     const magicLinkUrl = `${BASE_URL}/api/auth/verify?token=${encodeURIComponent(token)}`;
     await sendMagicLinkEmail(lead.email, magicLinkUrl);
+
+    await sendContactCopyEmail(ADMIN_EMAIL, {
+      name: lead.name,
+      email: lead.email,
+      company: lead.company,
+      packageLabel: lead.packageLabel,
+      message: lead.message,
+    });
 
     return NextResponse.json({ success: true });
   } catch (e) {
