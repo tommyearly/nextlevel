@@ -89,13 +89,13 @@ export default function ContactForm({ defaultPackage }: ContactFormProps) {
   if (status === 'sent') {
     return (
       <div
-        className="rounded-2xl border border-white/5 bg-brand-card/60 backdrop-blur-xl p-12 sm:p-16 flex flex-col items-center justify-center text-center"
+        className="rounded-2xl border border-white/5 bg-brand-card/60 backdrop-blur-xl p-12 sm:p-16 flex flex-col items-center justify-center text-center min-h-[420px] sm:min-h-[460px]"
         role="status"
         aria-live="polite"
       >
-        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex items-center justify-center flex-shrink-0">
+        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex items-center justify-center flex-shrink-0 animate-success-circle">
           <svg className="w-10 h-10 sm:w-12 sm:h-12 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M5 13l4 4L19 7" />
+            <path className="animate-success-check" d="M5 13l4 4L19 7" />
           </svg>
         </div>
         <h2 className="mt-6 font-heading text-xl sm:text-2xl font-bold text-slate-50">Message sent</h2>
