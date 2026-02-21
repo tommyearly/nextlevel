@@ -86,6 +86,26 @@ export default function ContactForm({ defaultPackage }: ContactFormProps) {
     }
   };
 
+  if (status === 'sent') {
+    return (
+      <div
+        className="rounded-2xl border border-white/5 bg-brand-card/60 backdrop-blur-xl p-12 sm:p-16 flex flex-col items-center justify-center text-center"
+        role="status"
+        aria-live="polite"
+      >
+        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex items-center justify-center flex-shrink-0">
+          <svg className="w-10 h-10 sm:w-12 sm:h-12 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h2 className="mt-6 font-heading text-xl sm:text-2xl font-bold text-slate-50">Message sent</h2>
+        <p className="mt-2 text-slate-400 text-base sm:text-lg max-w-sm">
+          Thanks for getting in touch. We&apos;ll be in contact within 24 hours with next steps.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -179,11 +199,6 @@ export default function ContactForm({ defaultPackage }: ContactFormProps) {
         <GradientButton type="submit" size="lg" disabled={status === 'sending'} ariaLabel="Send message">
           {status === 'sending' ? 'Sending...' : 'Send message'}
         </GradientButton>
-        {status === 'sent' && (
-          <p className="text-accent-blue text-sm font-medium" role="status">
-            Thanks. We will be in touch soon.
-          </p>
-        )}
         {status === 'error' && (
           <p className="text-red-400 text-sm font-medium" role="alert">
             Something went wrong. Please try again or email us directly.
