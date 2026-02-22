@@ -38,6 +38,37 @@ const MAGIC_LINK_HTML_TEMPLATE = `<!DOCTYPE html>
 </body>
 </html>`;
 
+const DASHBOARD_LOGIN_HTML_TEMPLATE = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your login to dashboard — Next Level Web</title>
+</head>
+<body style="margin:0; padding:0; background-color:#0c1222; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#0c1222;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 480px; background-color:#111827; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
+          <tr>
+            <td style="padding: 32px 28px;">
+              <table role="presentation" cellspacing="0" cellpadding="0" style="margin-bottom: 8px;"><tr><td style="vertical-align: middle; padding-right: 10px;"><img src="{{LOGO_URL}}" width="32" height="32" alt="" style="display: block; border: 0;" /></td><td style="vertical-align: middle;"><h1 style="margin:0; font-size: 22px; font-weight: 700; color:#f8fafc; letter-spacing: -0.02em;">Next Level Web</h1></td></tr></table>
+              <p style="margin:0 0 24px 0; font-size: 14px; color:#94a3b8;">Your login to dashboard</p>
+              <p style="margin:0 0 16px 0; font-size: 15px; line-height: 1.5; color:#f8fafc;">Use the link below to sign in to your dashboard whenever you need to check on your project.</p>
+              <p style="margin:0 0 24px 0;">
+                <a href="{{DASHBOARD_LOGIN_URL}}" style="display: inline-block; padding: 12px 24px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); color:#ffffff; font-size: 14px; font-weight: 600; text-decoration: none; border-radius: 8px;">Sign in</a>
+              </p>
+              <p style="margin:0; font-size: 13px; color:#94a3b8;">We&apos;ll also send you a one-time login link when you need it.</p>
+              <p style="margin: 24px 0 0 0; font-size: 13px; color:#94a3b8;">— Next Level Web</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
 export type SendEmailResult = { ok: true } | { ok: false; message: string };
 
 export type ContactCopyData = {
@@ -135,6 +166,29 @@ export async function sendMagicLinkEmail(to: string, magicLinkUrl: string): Prom
   });
   if (error) {
     console.error('Resend error:', error);
+    const msg = error.message ?? (typeof error === 'object' ? JSON.stringify(error) : String(error));
+    return { ok: false, message: msg };
+  }
+  return { ok: true };
+}
+
+export async function sendDashboardLoginEmail(to: string): Promise<SendEmailResult> {
+  const resend = getResend();
+  if (!resend) {
+    return { ok: false, message: 'RESEND_API_KEY not set' };
+  }
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextlevelweb.ie';
+  const logoUrl = `${baseUrl}/icon-large.png`;
+  const dashboardLoginUrl = `${baseUrl}/dashboard/login`;
+  const html = DASHBOARD_LOGIN_HTML_TEMPLATE.replace(/\{\{LOGO_URL\}\}/g, logoUrl).replace(/\{\{DASHBOARD_LOGIN_URL\}\}/g, dashboardLoginUrl);
+  const { error } = await resend.emails.send({
+    from: FROM,
+    to: [to],
+    subject: 'Your login to dashboard — Next Level Web',
+    html,
+  });
+  if (error) {
+    console.error('Resend dashboard login email error:', error);
     const msg = error.message ?? (typeof error === 'object' ? JSON.stringify(error) : String(error));
     return { ok: false, message: msg };
   }
