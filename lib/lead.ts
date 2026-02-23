@@ -1,14 +1,29 @@
 import { prisma } from '@/lib/db';
+import type { Prisma } from '@prisma/client';
 
 /** Session shape needed to resolve the current lead (from getSessionFromCookie / getSessionFromRequest) */
 type SessionForLead = { email: string; leadId?: string };
+
+type LeadWithTicketMessages = Prisma.LeadGetPayload<{
+  include: { ticketMessages: true };
+}>;
 
 /**
  * Resolve the lead for a customer session.
  * Uses leadId when present (after magic link), otherwise finds most recent by email.
  */
-export async function getLeadForSession<T extends SessionForLead>(
-  session: T,
+export async function getLeadForSession(
+  session: SessionForLead,
+  options: { includeTicketMessages: true }
+): Promise<LeadWithTicketMessages | null>;
+
+export async function getLeadForSession(
+  session: SessionForLead,
+  options?: { includeTicketMessages?: false }
+): Promise<Awaited<ReturnType<typeof prisma.lead.findFirst>>>;
+
+export async function getLeadForSession(
+  session: SessionForLead,
   options?: { includeTicketMessages?: boolean }
 ) {
   return prisma.lead.findFirst({
