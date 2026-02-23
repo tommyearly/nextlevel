@@ -41,7 +41,7 @@ export default async function DashboardPage() {
 
       <ProgressSection
         projectUrl={lead.projectUrl}
-        currentStage={currentStage}
+        currentStage={currentStage ?? null}
         currentStageIndex={currentStageIndex}
         customerFeedback={lead.customerFeedback ?? null}
         customerFeedbackAt={lead.customerFeedbackAt ?? null}
