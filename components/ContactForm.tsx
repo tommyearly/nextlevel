@@ -6,6 +6,7 @@ import GradientButton from './GradientButton';
 
 declare global {
   interface Window {
+    gtag?: (...args: unknown[]) => void;
     grecaptcha?: {
       render: (
         container: HTMLElement,
@@ -78,6 +79,13 @@ export default function ContactForm({ defaultPackage }: ContactFormProps) {
         return;
       }
       setStatus('sent');
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', 'conversion', {
+          send_to: 'AW-17971880740/LQKkCIjx0_0bEKTG1PlC',
+          value: 1.0,
+          currency: 'EUR',
+        });
+      }
       form.reset();
       if (window.grecaptcha && widgetIdRef.current !== null) {
         window.grecaptcha.reset(widgetIdRef.current);
