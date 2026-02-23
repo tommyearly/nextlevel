@@ -24,8 +24,6 @@ function getCookieOptions(overrides?: { maxAge?: number }) {
     ...(domain && { domain }),
   };
 }
-</think>path
-c:\Users\Thomas\Desktop\nextlevelie\lib\auth.ts
 
 type SessionPayload = {
   email: string;
