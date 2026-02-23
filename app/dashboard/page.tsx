@@ -35,8 +35,8 @@ export default async function DashboardPage() {
         packageLabel={lead.packageLabel}
         pricing={pricing}
         payment={payment}
-        canPayDeposit={canPayDeposit}
-        canPayBalance={canPayBalance}
+        canPayDeposit={!!canPayDeposit}
+        canPayBalance={!!canPayBalance}
       />
 
       <ProgressSection
