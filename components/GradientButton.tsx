@@ -12,6 +12,7 @@ type GradientButtonProps = {
   className?: string;
   type?: 'button' | 'submit';
   disabled?: boolean;
+  /** Required when children is not descriptive (e.g. icon-only). Falls back to children when it's a string. */
   ariaLabel?: string;
 };
 

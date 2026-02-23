@@ -16,7 +16,8 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
-    "icon:export": "node scripts/export-icon-png.js"
+    "icon:export": "node scripts/export-icon-png.js",
+    "lint:a11y": "echo Run: npx axe http://localhost:3000 (with dev server)"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

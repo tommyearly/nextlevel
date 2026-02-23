@@ -1,11 +1,25 @@
 import { NextResponse } from 'next/server';
 import { createMagicLink } from '@/lib/magic-link';
 import { sendMagicLinkEmail } from '@/lib/email';
+import { checkAdminMagicLinkRateLimit } from '@/lib/rate-limit';
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.trim().toLowerCase();
 
 export async function POST(request: Request) {
+  const rateLimit = checkAdminMagicLinkRateLimit(request);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please try again later.' },
+      {
+        status: 429,
+        headers: rateLimit.retryAfter
+          ? { 'Retry-After': String(rateLimit.retryAfter) }
+          : undefined,
+      }
+    );
+  }
+
   if (!ADMIN_EMAIL) {
     return NextResponse.json({ error: 'Admin login not configured. Set ADMIN_EMAIL in Vercel.' }, { status: 503 });
   }

@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type Stripe from 'stripe';
 import { getSessionFromRequest } from '@/lib/auth';
+import { getLeadForSession } from '@/lib/lead';
 import { prisma } from '@/lib/db';
 import { getPackagePricing } from '@/lib/pricing';
 import { stripe, getCheckoutPriceId } from '@/lib/stripe';
 
 export async function POST(request: NextRequest) {
+  try {
   const session = await getSessionFromRequest(request);
   if (!session || session.role !== 'customer') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -25,10 +27,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid type. Use deposit or balance.' }, { status: 400 });
   }
 
-  const lead = await prisma.lead.findFirst({
-    where: session.leadId ? { id: session.leadId, email: session.email } : { email: session.email },
-    orderBy: { createdAt: 'desc' },
-  });
+  const lead = await getLeadForSession(session);
   if (!lead) {
     return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
   }
@@ -92,4 +91,8 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json({ redirectUrl: url });
+  } catch (err) {
+    console.error('Dashboard checkout error:', err);
+    return NextResponse.json({ error: 'Checkout failed' }, { status: 500 });
+  }
 }

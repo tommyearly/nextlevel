@@ -11,9 +11,11 @@ type Props = {
 
 export default function CheckoutButton({ type, label, className, ariaLabel }: Props) {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleClick = async () => {
     setLoading(true);
+    setError(null);
     try {
       const formData = new FormData();
       formData.set('type', type);
@@ -28,31 +30,39 @@ export default function CheckoutButton({ type, label, className, ariaLabel }: Pr
       }
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        alert(data?.error || 'Something went wrong. Please try again.');
+        setError(data?.error || 'Something went wrong. Please try again.');
         return;
       }
       const data = await res.json().catch(() => ({}));
       if (data?.redirectUrl) {
         window.location.href = data.redirectUrl;
       } else {
-        alert('Something went wrong. Please try again.');
+        setError('Something went wrong. Please try again.');
       }
     } catch {
-      alert('Network error. Please try again.');
+      setError('Network error. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      disabled={loading}
-      aria-label={ariaLabel ?? label}
-      className={className}
-    >
-      {loading ? 'Redirecting…' : label}
-    </button>
+    <span className="inline-flex flex-col items-start gap-2">
+      <button
+        type="button"
+        onClick={handleClick}
+        disabled={loading}
+        aria-label={ariaLabel ?? label}
+        aria-describedby={error ? `checkout-error-${type}` : undefined}
+        className={className}
+      >
+        {loading ? 'Redirecting…' : label}
+      </button>
+      {error && (
+        <p id={`checkout-error-${type}`} role="alert" className="text-amber-400 text-sm font-medium">
+          {error}
+        </p>
+      )}
+    </span>
   );
 }

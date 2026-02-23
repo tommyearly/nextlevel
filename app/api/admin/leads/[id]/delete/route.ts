@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db';
 type RouteContext = { params: Promise<{ id: string }> | { id: string } };
 
 export async function POST(request: NextRequest, context: RouteContext) {
+  try {
   const session = await getSessionFromCookie();
   if (!session || session.role !== 'admin') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -17,4 +18,8 @@ export async function POST(request: NextRequest, context: RouteContext) {
   await prisma.lead.delete({ where: { id } });
   const base = request.nextUrl?.origin ?? request.url?.split('/api')[0] ?? 'http://localhost:3000';
   return NextResponse.redirect(new URL('/admin', base));
+  } catch (err) {
+    console.error('Admin delete lead error:', err);
+    return NextResponse.json({ error: 'Delete failed' }, { status: 500 });
+  }
 }

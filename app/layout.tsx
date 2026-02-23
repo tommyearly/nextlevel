@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import WhatsAppLink from '@/components/WhatsAppLink';
 import CookieBanner from '@/components/CookieBanner';
+import StructuredData from '@/components/StructuredData';
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -79,6 +80,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable}`}>
       <body className="min-h-screen flex flex-col">
+        <StructuredData />
         <Navbar />
         <main id="main-content" className="flex-1" role="main">
           {children}

@@ -5,7 +5,7 @@ import { createMagicLink } from '@/lib/magic-link';
 import { sendMagicLinkEmail, sendContactCopyEmail, sendDashboardLoginEmail } from '@/lib/email';
 import { verifyRecaptcha } from '@/lib/recaptcha';
 
-const ADMIN_EMAIL = 'hello@nextlevelweb.ie';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'hello@nextlevelweb.ie';
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
 

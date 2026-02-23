@@ -1,10 +1,13 @@
 import { NextResponse } from 'next/server';
 
 /**
- * Temporary: hit /api/debug-env on production to see if SESSION_SECRET is available.
- * Remove or protect this route once debugging is done.
+ * Dev-only: hit /api/debug-env to check if SESSION_SECRET is available.
+ * Returns 404 in production to avoid exposing config metadata.
  */
 export async function GET() {
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ error: 'Not available' }, { status: 404 });
+  }
   const secret = process.env.SESSION_SECRET;
   return NextResponse.json({
     SESSION_SECRET: secret ? 'set' : 'not set',

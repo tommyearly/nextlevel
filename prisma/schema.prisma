@@ -35,6 +35,8 @@ model Lead {
   packageChangeFrom   String?   // packageId before change
   paymentReceipts     Json?    // Stripe receipt URLs [{ receiptUrl, amountCents, paymentType, paidAt }]; open link and print to PDF
   ticketMessages      TicketMessage[]
+
+  @@index([email, createdAt(sort: Desc)])
 }
 
 model TicketMessage {
@@ -44,6 +46,8 @@ model TicketMessage {
   message   String
   fromRole  String   // "customer" | "admin"
   createdAt DateTime @default(now())
+
+  @@index([leadId])
 }
 
 model MagicLinkToken {
@@ -54,4 +58,11 @@ model MagicLinkToken {
   expiresAt DateTime
   usedAt    DateTime?
   createdAt DateTime  @default(now())
+
+  @@index([expiresAt])
+}
+
+model ProcessedStripeSession {
+  sessionId   String   @id // Stripe checkout session ID — prevents duplicate webhook processing
+  processedAt DateTime @default(now())
 }

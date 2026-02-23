@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionFromRequest } from '@/lib/auth';
+import { getLeadForSession } from '@/lib/lead';
 import { prisma } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
+  try {
   const session = await getSessionFromRequest(request);
   if (!session || session.role !== 'customer') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -13,13 +15,14 @@ export async function POST(request: NextRequest) {
   if (!message) {
     return NextResponse.json({ error: 'Please enter a message.' }, { status: 400 });
   }
-  const lead = await prisma.lead.findFirst({
-    where: session.leadId ? { id: session.leadId, email: session.email } : { email: session.email },
-    orderBy: { createdAt: 'desc' },
-  });
+  const lead = await getLeadForSession(session);
   if (!lead) return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
   await prisma.ticketMessage.create({
     data: { leadId: lead.id, message, fromRole: 'customer' },
   });
   return NextResponse.redirect(new URL('/dashboard', request.url));
+  } catch (err) {
+    console.error('Dashboard ticket error:', err);
+    return NextResponse.json({ error: 'Failed to send message' }, { status: 500 });
+  }
 }

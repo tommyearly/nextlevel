@@ -7,6 +7,7 @@ const VALID_STATUSES = ['unpaid', 'paid_deposit', 'paid_full'] as const;
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function POST(request: NextRequest, context: RouteContext) {
+  try {
   const session = await getSessionFromCookie();
   if (!session || session.role !== 'admin') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -29,9 +30,14 @@ export async function POST(request: NextRequest, context: RouteContext) {
     data: { paymentStatus },
   });
   return NextResponse.redirect(new URL(`/admin/leads/${id}`, request.url));
+  } catch (err) {
+    console.error('Admin payment POST error:', err);
+    return NextResponse.json({ error: 'Update failed' }, { status: 500 });
+  }
 }
 
 export async function PATCH(request: NextRequest, context: RouteContext) {
+  try {
   const session = await getSessionFromCookie();
   if (!session || session.role !== 'admin') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -59,4 +65,8 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     data: { paymentStatus },
   });
   return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error('Admin payment PATCH error:', err);
+    return NextResponse.json({ error: 'Update failed' }, { status: 500 });
+  }
 }

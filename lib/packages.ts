@@ -1,12 +1,73 @@
-/** Package ids used in URLs (?package=...) and form pre-selection */
-export const PACKAGE_IDS = ['starter', 'growth', 'premium', 'custom'] as const;
-export type PackageId = (typeof PACKAGE_IDS)[number];
+/** Single source of truth for package definitions — used by Pricing, pricing page, contact form, dashboard, checkout. */
+export const PACKAGES = [
+  {
+    id: 'starter',
+    name: 'Starter',
+    tagline: 'Get online fast',
+    price: 900,
+    features: [
+      '5-page website',
+      'Contact form',
+      'Domain name included',
+      'Hosting included',
+      'Mobile responsive',
+      'SEO basics',
+    ],
+    cta: 'Get started',
+    gradient: 'from-accent-blue/20 to-accent-violet/10',
+    popular: false,
+  },
+  {
+    id: 'growth',
+    name: 'Growth',
+    tagline: 'Edit your homepage live',
+    price: 1200,
+    features: [
+      'Everything in Starter',
+      'Editable homepage on the fly',
+      'Update key sections yourself',
+      'No developer needed for content',
+      'Domain name included',
+      'Hosting included',
+    ],
+    cta: 'Choose Growth',
+    gradient: 'from-accent-violet/25 to-accent-blue/15',
+    popular: true,
+  },
+  {
+    id: 'premium',
+    name: 'Premium',
+    tagline: 'Fully yours to edit',
+    price: 2000,
+    features: [
+      'Everything in Growth',
+      'Fully editable site (all pages)',
+      'Content management built in',
+      'Ongoing flexibility',
+      'Domain name included',
+      'Hosting included',
+    ],
+    cta: 'Choose Premium',
+    gradient: 'from-accent-violet/20 to-accent-cyan/10',
+    popular: false,
+  },
+] as const;
 
-/** Option value for the contact form package <select> — must match exactly */
+export type PackageId = 'starter' | 'growth' | 'premium' | 'custom';
+
+export const PACKAGE_IDS: readonly PackageId[] = ['starter', 'growth', 'premium', 'custom'];
+
+/** Packages shown on Pricing section and pricing page (excludes Custom). */
+export const DISPLAY_PACKAGES = PACKAGES;
+
+const formatPrice = (n: number) => `€${n.toLocaleString('en-IE')}`;
+
+/** Option value for the contact form package <select> — derived from PACKAGES. */
 export const PACKAGE_FORM_OPTIONS: { id: PackageId; value: string }[] = [
-  { id: 'starter', value: 'Starter — €900 (5 pages + contact form)' },
-  { id: 'growth', value: 'Growth — €1,200 (5 pages + contact form + editable homepage)' },
-  { id: 'premium', value: 'Premium — €2,000 (5 pages + contact form + fully editable)' },
+  ...PACKAGES.map((p) => ({
+    id: p.id,
+    value: `${p.name} — ${formatPrice(p.price)} (5 pages + contact form${p.id === 'growth' ? ' + editable homepage' : p.id === 'premium' ? ' + fully editable' : ''})`,
+  })),
   { id: 'custom', value: 'Custom (describe below)' },
 ];
 

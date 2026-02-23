@@ -57,7 +57,7 @@ export default function Navbar() {
           <Link
             href="/contact"
             prefetch={!isProtectedPage}
-            className="hidden sm:inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-lg bg-gradient-to-r from-accent-blue to-accent-violet text-white shadow-glow-sm hover:shadow-glow transition-all hover:scale-[1.02] active:scale-[0.98]"
+            className="hidden sm:inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-lg bg-gradient-to-r from-accent-blue to-accent-violet text-white shadow-glow-sm hover:shadow-glow transition-all hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 focus-visible:ring-offset-brand-surface"
           >
             Get in touch
           </Link>
@@ -97,7 +97,7 @@ export default function Navbar() {
             </li>
           ))}
           <li className="pt-2">
-            <Link href="/contact" prefetch={!isProtectedPage} className="block py-3 px-4 rounded-lg text-sm font-semibold bg-gradient-to-r from-accent-blue to-accent-violet text-white text-center" onClick={handleClose}>
+            <Link href="/contact" prefetch={!isProtectedPage} className="block py-3 px-4 rounded-lg text-sm font-semibold bg-gradient-to-r from-accent-blue to-accent-violet text-white text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 focus-visible:ring-offset-brand-surface" onClick={handleClose}>
               Get in touch
             </Link>
           </li>

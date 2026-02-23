@@ -49,6 +49,7 @@ export default function ContactForm({ defaultPackage }: ContactFormProps) {
     script.defer = true;
     document.head.appendChild(script);
     return () => {
+      script.remove();
       delete win[callbackName];
     };
   }, [siteKey]);

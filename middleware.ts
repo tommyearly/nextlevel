@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
-
-const COOKIE_NAME = 'nextlevel_session';
+import { getCookieName } from '@/lib/auth';
 
 async function getSessionPayload(request: NextRequest): Promise<{ role: string } | null> {
-  const token = request.cookies.get(COOKIE_NAME)?.value;
+  const token = request.cookies.get(getCookieName())?.value;
   if (!token) return null;
   const secret = process.env.SESSION_SECRET;
   if (!secret || secret.length < 32) return null;

@@ -72,7 +72,7 @@ function AdminLoginForm() {
               />
             </label>
             {errorMessage && <p className="mt-2 text-red-400 text-sm">{errorMessage}</p>}
-            <GradientButton type="submit" size="lg" className="w-full mt-6" disabled={status === 'sending'}>
+            <GradientButton type="submit" size="lg" className="w-full mt-6" disabled={status === 'sending'} ariaLabel="Send login link">
               {status === 'sending' ? 'Sending…' : 'Send login link'}
             </GradientButton>
           </form>

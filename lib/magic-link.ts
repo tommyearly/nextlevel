@@ -43,3 +43,13 @@ export async function consumeMagicLink(token: string): Promise<ConsumeResult> {
     role: row.role as 'customer' | 'admin',
   };
 }
+
+/** Delete expired or used magic link tokens. Call from Vercel Cron or manually. */
+export async function cleanupExpiredMagicLinks(): Promise<{ deleted: number }> {
+  const result = await prisma.magicLinkToken.deleteMany({
+    where: {
+      OR: [{ expiresAt: { lt: new Date() } }, { usedAt: { not: null } }],
+    },
+  });
+  return { deleted: result.count };
+}

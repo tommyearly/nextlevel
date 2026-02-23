@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionFromRequest } from '@/lib/auth';
+import { getLeadForSession } from '@/lib/lead';
 import { prisma } from '@/lib/db';
 import { getPackagePricing } from '@/lib/pricing';
 import { PACKAGE_FORM_OPTIONS, isPackageDowngradeOrSame } from '@/lib/packages';
@@ -7,6 +8,7 @@ import { PACKAGE_FORM_OPTIONS, isPackageDowngradeOrSame } from '@/lib/packages';
 const ALLOWED_IDS = ['starter', 'growth', 'premium'] as const;
 
 export async function POST(request: NextRequest) {
+  try {
   const session = await getSessionFromRequest(request);
   if (!session || session.role !== 'customer') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -20,10 +22,7 @@ export async function POST(request: NextRequest) {
   const option = PACKAGE_FORM_OPTIONS.find((o) => o.id === packageId);
   const packageLabel = option?.value ?? packageId;
 
-  const lead = await prisma.lead.findFirst({
-    where: session.leadId ? { id: session.leadId, email: session.email } : { email: session.email },
-    orderBy: { createdAt: 'desc' },
-  });
+  const lead = await getLeadForSession(session);
   if (!lead) {
     return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
   }
@@ -63,4 +62,8 @@ export async function POST(request: NextRequest) {
   });
 
   return NextResponse.redirect(new URL('/dashboard', request.url));
+  } catch (err) {
+    console.error('Dashboard package error:', err);
+    return NextResponse.json({ error: 'Update failed' }, { status: 500 });
+  }
 }

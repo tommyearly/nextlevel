@@ -176,6 +176,37 @@ export default async function AdminLeadDetailPage({ params }: Props) {
 
         <h2 className="font-heading text-lg font-semibold text-slate-50 mt-8 mb-4">Project progress</h2>
         <p className="text-slate-400 text-sm mb-4">Customer sees the staging URL and progress stage in their dashboard.</p>
+        <form action={`/api/admin/leads/${lead.id}/project`} method="POST" className="space-y-4 mb-8">
+          <label className="block">
+            <span className="text-slate-400 text-sm font-medium mb-1.5 block">Customer / preview URL</span>
+            <input
+              type="url"
+              name="projectUrl"
+              defaultValue={lead.projectUrl ?? ''}
+              placeholder="https://staging.example.com or https://your-site.vercel.app"
+              className="w-full rounded-lg border border-white/10 bg-brand-surface px-3 py-2 text-slate-200 text-sm placeholder-slate-500 focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
+              aria-label="Preview URL for customer"
+            />
+          </label>
+          <label className="block">
+            <span className="text-slate-400 text-sm font-medium mb-1.5 block">Progress stage</span>
+            <select
+              name="progressStage"
+              defaultValue={lead.progressStage ?? ''}
+              className="rounded-lg border border-white/10 bg-brand-surface px-3 py-2 text-slate-200 text-sm focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue min-w-[220px]"
+              aria-label="Progress stage"
+            >
+              <option value="">— Select stage —</option>
+              {PROGRESS_STAGES.map((s) => (
+                <option key={s.id} value={s.id}>{s.label}</option>
+              ))}
+            </select>
+          </label>
+          <button type="submit" className="rounded-lg bg-accent-blue/90 hover:bg-accent-blue px-4 py-2 text-sm font-medium text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 focus-visible:ring-offset-brand-surface">
+            Save URL &amp; stage
+          </button>
+        </form>
+
         <h2 className="font-heading text-lg font-semibold text-slate-50 mt-8 mb-4">Ticket (TKT-{lead.id.slice(-6).toUpperCase()})</h2>
         <p className="text-slate-400 text-sm mb-4">Messages are stacked; reply below to add to the thread. Customer sees this in their dashboard.</p>
         {lead.ticketMessages.length > 0 ? (
@@ -216,38 +247,6 @@ export default async function AdminLeadDetailPage({ params }: Props) {
             className="rounded-lg bg-accent-blue/90 hover:bg-accent-blue px-4 py-2 text-sm font-medium text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 focus-visible:ring-offset-brand-surface"
           >
             Send reply
-          </button>
-        </form>
-
-        <h2 className="font-heading text-lg font-semibold text-slate-50 mt-8 mb-4">Project progress</h2>
-        <form action={`/api/admin/leads/${lead.id}/project`} method="POST" className="space-y-4">
-          <label className="block">
-            <span className="text-slate-400 text-sm font-medium mb-1.5 block">Customer / preview URL</span>
-            <input
-              type="url"
-              name="projectUrl"
-              defaultValue={lead.projectUrl ?? ''}
-              placeholder="https://staging.example.com or https://your-site.vercel.app"
-              className="w-full rounded-lg border border-white/10 bg-brand-surface px-3 py-2 text-slate-200 text-sm placeholder-slate-500 focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue"
-              aria-label="Preview URL for customer"
-            />
-          </label>
-          <label className="block">
-            <span className="text-slate-400 text-sm font-medium mb-1.5 block">Progress stage</span>
-            <select
-              name="progressStage"
-              defaultValue={lead.progressStage ?? ''}
-              className="rounded-lg border border-white/10 bg-brand-surface px-3 py-2 text-slate-200 text-sm focus:border-accent-blue focus:outline-none focus:ring-1 focus:ring-accent-blue min-w-[220px]"
-              aria-label="Progress stage"
-            >
-              <option value="">— Select stage —</option>
-              {PROGRESS_STAGES.map((s) => (
-                <option key={s.id} value={s.id}>{s.label}</option>
-              ))}
-            </select>
-          </label>
-          <button type="submit" className="rounded-lg bg-accent-blue/90 hover:bg-accent-blue px-4 py-2 text-sm font-medium text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 focus-visible:ring-offset-brand-surface">
-            Save URL &amp; stage
           </button>
         </form>
 

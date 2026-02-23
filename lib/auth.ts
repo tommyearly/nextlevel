@@ -2,8 +2,16 @@ import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import type { NextRequest, NextResponse } from 'next/server';
 
-const COOKIE_NAME = 'nextlevel_session';
+const COOKIE_NAME_BASE = 'nextlevel_session';
 const MAX_AGE = 60 * 60 * 24 * 7; // 7 days
+
+/** __Host- prefix: cookie tied to exact host, no Domain; requires Secure, Path=/. Use when same-origin only. */
+function getCookieName(): string {
+  const isProd = process.env.NODE_ENV === 'production';
+  const hasDomain = !!process.env.COOKIE_DOMAIN;
+  if (isProd && !hasDomain) return `__Host-${COOKIE_NAME_BASE}`;
+  return COOKIE_NAME_BASE;
+}
 
 function getCookieOptions(overrides?: { maxAge?: number }) {
   const domain = process.env.COOKIE_DOMAIN || undefined; // e.g. .nextlevelweb.ie so www and non-www share the cookie
@@ -16,6 +24,8 @@ function getCookieOptions(overrides?: { maxAge?: number }) {
     ...(domain && { domain }),
   };
 }
+</think>path
+c:\Users\Thomas\Desktop\nextlevelie\lib\auth.ts
 
 type SessionPayload = {
   email: string;
@@ -56,31 +66,31 @@ export async function verifySession(token: string): Promise<SessionPayload | nul
 
 /** Set session cookie on a response (use this before returning redirect so the cookie is sent). */
 export function setSessionCookieOnResponse(response: NextResponse, token: string): void {
-  response.cookies.set(COOKIE_NAME, token, getCookieOptions());
+  response.cookies.set(getCookieName(), token, getCookieOptions());
 }
 
 export async function setSessionCookie(token: string): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.set(COOKIE_NAME, token, getCookieOptions());
+  cookieStore.set(getCookieName(), token, getCookieOptions());
 }
 
 export async function getSessionFromCookie(): Promise<SessionPayload | null> {
   const cookieStore = await cookies();
-  const token = cookieStore.get(COOKIE_NAME)?.value;
+  const token = cookieStore.get(getCookieName())?.value;
   if (!token) return null;
   return verifySession(token);
 }
 
 /** Use in Route Handlers: read session from the incoming request so cookies are reliable in serverless. */
 export async function getSessionFromRequest(request: NextRequest): Promise<SessionPayload | null> {
-  const token = request.cookies.get(COOKIE_NAME)?.value;
+  const token = request.cookies.get(getCookieName())?.value;
   if (!token) return null;
   return verifySession(token);
 }
 
 export async function clearSessionCookie(): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.delete(COOKIE_NAME);
+  cookieStore.delete(getCookieName());
 }
 
-export { COOKIE_NAME, getCookieOptions };
+export { getCookieName, getCookieOptions };

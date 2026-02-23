@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db';
 type RouteContext = { params: Promise<{ id: string }> | { id: string } };
 
 export async function POST(request: NextRequest, context: RouteContext) {
+  try {
   const session = await getSessionFromCookie();
   if (!session || session.role !== 'admin') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -22,4 +23,8 @@ export async function POST(request: NextRequest, context: RouteContext) {
     data: { leadId: id, message, fromRole: 'admin' },
   });
   return NextResponse.redirect(new URL(`/admin/leads/${id}`, request.url));
+  } catch (err) {
+    console.error('Admin ticket error:', err);
+    return NextResponse.json({ error: 'Failed to send message' }, { status: 500 });
+  }
 }

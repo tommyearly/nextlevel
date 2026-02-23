@@ -1,13 +1,12 @@
-import type { PackageId } from './packages';
+import { PACKAGES } from './packages';
 
 const DEPOSIT_EURO = 200;
 
-const PACKAGE_PRICES: Record<PackageId, number | null> = {
-  starter: 900,
-  growth: 1200,
-  premium: 2000,
-  custom: null,
-};
+function getPriceFromPackages(id: string): number | null {
+  if (id === 'custom') return null;
+  const pkg = PACKAGES.find((p) => p.id === id);
+  return pkg ? pkg.price : null;
+}
 
 export type PackagePricing = {
   label: string;
@@ -17,16 +16,10 @@ export type PackagePricing = {
 };
 
 export function getPackagePricing(packageId: string | null | undefined): PackagePricing {
-  const id = (packageId ?? '') as PackageId;
-  const total = PACKAGE_PRICES[id] ?? null;
-  const label =
-    id === 'starter'
-      ? 'Starter'
-      : id === 'growth'
-        ? 'Growth'
-        : id === 'premium'
-          ? 'Premium'
-          : 'Custom';
+  const id = packageId ?? '';
+  const total = getPriceFromPackages(id);
+  const pkg = PACKAGES.find((p) => p.id === id);
+  const label = pkg ? pkg.name : id === 'custom' ? 'Custom' : 'Custom';
   const totalFormatted =
     total !== null ? `€${total.toLocaleString('en-IE')}` : 'Quote on request';
   return {
@@ -57,7 +50,7 @@ function effectiveTotalPaidCents(
 ): number {
   if (totalPaidCents != null && totalPaidCents > 0) return totalPaidCents;
   if (paymentStatus === 'paid_full') {
-    const total = PACKAGE_PRICES[(packageId ?? '') as PackageId] ?? null;
+    const total = getPriceFromPackages(packageId ?? '');
     return total != null ? total * 100 : 0;
   }
   if (paymentStatus === 'paid_deposit') return DEPOSIT_EURO * 100;

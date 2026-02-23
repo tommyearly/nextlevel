@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS "MagicLinkToken" (
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS "MagicLinkToken_tokenHash_key" ON "MagicLinkToken"("tokenHash");
+CREATE INDEX IF NOT EXISTS "MagicLinkToken_expiresAt_idx" ON "MagicLinkToken"("expiresAt");
 
 CREATE TABLE IF NOT EXISTS "TicketMessage" (
   "id" TEXT NOT NULL,
@@ -52,6 +53,15 @@ ALTER TABLE "TicketMessage" ADD CONSTRAINT "TicketMessage_leadId_fkey"
 
 CREATE INDEX IF NOT EXISTS "TicketMessage_leadId_idx" ON "TicketMessage"("leadId");
 
+CREATE INDEX IF NOT EXISTS "Lead_email_createdAt_idx" ON "Lead"("email", "createdAt" DESC);
+
+CREATE TABLE IF NOT EXISTS "ProcessedStripeSession" (
+  "sessionId" TEXT NOT NULL,
+  "processedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "ProcessedStripeSession_pkey" PRIMARY KEY ("sessionId")
+);
+
 -- If Lead table already existed before these columns were added, run once in SQL Editor:
 -- ALTER TABLE "Lead" ADD COLUMN IF NOT EXISTS "totalPaidCents" INTEGER NOT NULL DEFAULT 0;
 -- ALTER TABLE "Lead" ADD COLUMN IF NOT EXISTS "paymentReceipts" JSONB;
+-- CREATE INDEX IF NOT EXISTS "Lead_email_createdAt_idx" ON "Lead"("email", "createdAt" DESC);
