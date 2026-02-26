@@ -25,10 +25,11 @@ export function getLocalBusinessJsonLd() {
       addressRegion: 'Co. Kildare',
       addressCountry: 'IE',
     },
-    areaServed: {
-      '@type': 'Country',
-      name: 'Ireland',
-    },
+    areaServed: [
+      { '@type': 'City', name: 'Dublin' },
+      { '@type': 'City', name: 'Leixlip' },
+      { '@type': 'Country', name: 'Ireland' },
+    ],
     priceRange: '€900 - €2,000',
   };
 }

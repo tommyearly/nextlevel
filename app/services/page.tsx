@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import GradientButton from '@/components/GradientButton';
 import GlassCard from '@/components/GlassCard';
 import HeroBackground from '@/components/HeroBackground';
@@ -49,7 +50,7 @@ export default function ServicesPage() {
               We want you to succeed
             </h1>
             <p className="mt-4 text-slate-400 text-lg max-w-2xl">
-              We&apos;re an Irish team doing hard-working, straightforward website design. No jargon, no price hikes, no surprises. You choose a package — we do the rest. Our job is to get you online and set up so you can get on with yours.
+              We&apos;re an Irish team doing hard-working, straightforward website design. No jargon, no price hikes, no surprises. You choose a package — we do the rest. Our job is to get you online and set up so you can get on with yours. We serve Dublin and all of Ireland — see our <Link href="/web-design-dublin" className="text-accent-blue hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 focus-visible:ring-offset-brand-surface rounded">web design Dublin</Link> page for more.
             </p>
           </GlassCard>
 

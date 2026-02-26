@@ -8,6 +8,7 @@ import LogoIcon from '@/components/LogoIcon';
 const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/services', label: 'Services' },
+  { href: '/web-design-dublin', label: 'Web design Dublin' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/contact', label: 'Contact' },
 ];

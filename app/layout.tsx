@@ -31,6 +31,7 @@ export const metadata: Metadata = {
   description:
     'Honest website design run by Irish people. Clear pricing, no surprises — editable pages so you can update your site yourself. Next Level Web — Leixlip, Kildare.',
   keywords: [
+    'web design Dublin',
     'web design Ireland',
     'Irish web design',
     'honest web design pricing',

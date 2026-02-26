@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import GradientButton from '@/components/GradientButton';
 import HeroBackground from '@/components/HeroBackground';
 import HeroTypewriter from '@/components/HeroTypewriter';
@@ -21,7 +22,10 @@ export default function Hero() {
               Website design run by Irish people. No mad pricing, no surprises — just honest work and editable pages so you stay in control. You&apos;re in the right place.
             </p>
             <p className="mt-4 text-slate-500 text-sm animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:400ms]">
-              100% Irish · Honest · Editable
+              100% Irish · Honest · Editable ·{' '}
+              <Link href="/web-design-dublin" className="text-accent-blue hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 focus-visible:ring-offset-brand-surface rounded">
+                Web design Dublin
+              </Link>
             </p>
             <div className="mt-10 flex flex-wrap gap-4 animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:500ms]">
               <GradientButton href="/contact" size="lg" ariaLabel="Get in touch">

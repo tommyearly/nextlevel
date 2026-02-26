@@ -5,6 +5,7 @@ import { SITE } from '@/lib/site';
 const footerLinks = [
   { href: '/', label: 'Home' },
   { href: '/services', label: 'Services' },
+  { href: '/web-design-dublin', label: 'Web design Dublin' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/contact', label: 'Contact' },
 ];
