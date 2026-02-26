@@ -20,7 +20,7 @@ const inter = Inter({
   display: 'swap',
 });
 
-const siteUrl = 'https://nextlevelweb.ie';
+const siteUrl = 'https://www.nextlevelweb.ie';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

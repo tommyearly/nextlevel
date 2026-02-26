@@ -155,7 +155,7 @@ export async function sendMagicLinkEmail(to: string, magicLinkUrl: string): Prom
   if (!resend) {
     return { ok: false, message: 'RESEND_API_KEY not set' };
   }
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextlevelweb.ie';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.nextlevelweb.ie';
   const logoUrl = `${baseUrl}/icon-large.png`;
   const html = MAGIC_LINK_HTML_TEMPLATE.replace(/\{\{MAGIC_LINK_URL\}\}/g, magicLinkUrl).replace(/\{\{LOGO_URL\}\}/g, logoUrl);
   const { data, error } = await resend.emails.send({
@@ -177,7 +177,7 @@ export async function sendDashboardLoginEmail(to: string): Promise<SendEmailResu
   if (!resend) {
     return { ok: false, message: 'RESEND_API_KEY not set' };
   }
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextlevelweb.ie';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.nextlevelweb.ie';
   const logoUrl = `${baseUrl}/icon-large.png`;
   const dashboardLoginUrl = `${baseUrl}/dashboard/login`;
   const html = DASHBOARD_LOGIN_HTML_TEMPLATE.replace(/\{\{LOGO_URL\}\}/g, logoUrl).replace(/\{\{DASHBOARD_LOGIN_URL\}\}/g, dashboardLoginUrl);
@@ -266,7 +266,7 @@ export async function sendPaymentReceiptEmail(
     opts?.recipientType === 'admin'
       ? `Payment received from ${data.leadEmail} — ${data.amountFormatted} (${paymentLabel}) — Next Level Web`
       : `Payment received — ${data.amountFormatted} (${paymentLabel}) — Next Level Web`;
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextlevelweb.ie';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.nextlevelweb.ie';
   const logoUrl = `${baseUrl}/icon-large.png`;
   const html = paymentReceiptHtml(data, logoUrl);
   const { error } = await resend.emails.send({

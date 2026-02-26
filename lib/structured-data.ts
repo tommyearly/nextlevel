@@ -1,7 +1,7 @@
 import { SITE } from './site';
 
 const baseUrl =
-  process.env.NEXT_PUBLIC_APP_URL ?? 'https://nextlevelweb.ie';
+  process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.nextlevelweb.ie';
 
 /**
  * LocalBusiness JSON-LD for rich snippets (Google, etc.).
