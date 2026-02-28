@@ -22,3 +22,8 @@ CREATE POLICY "Allow app full access" ON "MagicLinkToken"
 ALTER TABLE "ProcessedStripeSession" ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow app full access" ON "ProcessedStripeSession"
   FOR ALL TO postgres USING (true) WITH CHECK (true);
+
+-- EmailSubscriber
+ALTER TABLE "EmailSubscriber" ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow app full access" ON "EmailSubscriber"
+  FOR ALL TO postgres USING (true) WITH CHECK (true);

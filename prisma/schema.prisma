@@ -66,3 +66,16 @@ model ProcessedStripeSession {
   sessionId   String   @id // Stripe checkout session ID — prevents duplicate webhook processing
   processedAt DateTime @default(now())
 }
+
+model EmailSubscriber {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  status         String    // "subscribed" | "unsubscribed"
+  name           String?
+  source         String?   // "admin" | "import" | "website"
+  subscribedAt   DateTime  @default(now())
+  unsubscribedAt DateTime?
+
+  @@index([status])
+  @@index([email])
+}

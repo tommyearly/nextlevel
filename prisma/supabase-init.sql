@@ -61,6 +61,20 @@ CREATE TABLE IF NOT EXISTS "ProcessedStripeSession" (
   CONSTRAINT "ProcessedStripeSession_pkey" PRIMARY KEY ("sessionId")
 );
 
+CREATE TABLE IF NOT EXISTS "EmailSubscriber" (
+  "id" TEXT NOT NULL,
+  "email" TEXT NOT NULL,
+  "status" TEXT NOT NULL,
+  "name" TEXT,
+  "source" TEXT,
+  "subscribedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "unsubscribedAt" TIMESTAMP(3),
+  CONSTRAINT "EmailSubscriber_pkey" PRIMARY KEY ("id")
+);
+CREATE UNIQUE INDEX IF NOT EXISTS "EmailSubscriber_email_key" ON "EmailSubscriber"("email");
+CREATE INDEX IF NOT EXISTS "EmailSubscriber_status_idx" ON "EmailSubscriber"("status");
+CREATE INDEX IF NOT EXISTS "EmailSubscriber_email_idx" ON "EmailSubscriber"("email");
+
 -- If Lead table already existed before these columns were added, run once in SQL Editor:
 -- ALTER TABLE "Lead" ADD COLUMN IF NOT EXISTS "totalPaidCents" INTEGER NOT NULL DEFAULT 0;
 -- ALTER TABLE "Lead" ADD COLUMN IF NOT EXISTS "paymentReceipts" JSONB;

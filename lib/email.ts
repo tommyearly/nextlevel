@@ -282,3 +282,100 @@ export async function sendPaymentReceiptEmail(
   }
   return { ok: true };
 }
+
+// ——— Campaign (3 packages promo) ———
+
+const CAMPAIGN_SUBJECT = 'Three clear packages to get your business online — Next Level Web';
+
+/** Build HTML for the 3-packages campaign email. Replace {{UNSUBSCRIBE_URL}} before sending. */
+export function getCampaignPackagesHtml(unsubscribeUrl: string): string {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.nextlevelweb.ie';
+  const logoUrl = `${baseUrl}/icon-large.png`;
+  const contactUrl = `${baseUrl}/contact`;
+  const contactStarter = `${baseUrl}/contact?package=starter`;
+  const contactGrowth = `${baseUrl}/contact?package=growth`;
+  const contactPremium = `${baseUrl}/contact?package=premium`;
+
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${escapeHtml(CAMPAIGN_SUBJECT)}</title>
+</head>
+<body style="margin:0; padding:0; background-color:#0c1222; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#0c1222;">
+    <tr>
+      <td align="center" style="padding: 32px 20px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 560px;">
+          <tr>
+            <td style="padding-bottom: 24px;">
+              <table role="presentation" cellspacing="0" cellpadding="0"><tr><td style="vertical-align: middle; padding-right: 10px;"><img src="${logoUrl}" width="40" height="40" alt="" style="display: block; border: 0;" /></td><td style="vertical-align: middle;"><h1 style="margin:0; font-size: 24px; font-weight: 700; color:#f8fafc; letter-spacing: -0.02em;">Next Level Web</h1></td></tr></table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 28px 24px; background-color:#111827; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
+              <p style="margin:0 0 20px 0; font-size: 16px; line-height: 1.5; color:#f8fafc;">We're an Irish web design agency. No jargon, no surprises — just clear pricing and a site you can update yourself. Here's how it works.</p>
+              <p style="margin:0 0 24px 0; font-size: 15px; color:#94a3b8;">Pick a package below. Domain and hosting included. We'll get you live in about 3 weeks.</p>
+
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 20px;">
+                <tr>
+                  <td style="padding: 20px; background-color: rgba(59,130,246,0.08); border-radius: 10px; border: 1px solid rgba(59,130,246,0.2);">
+                    <p style="margin:0 0 4px 0; font-size: 18px; font-weight: 700; color:#f8fafc;">Starter — €900</p>
+                    <p style="margin:0 0 12px 0; font-size: 13px; color:#94a3b8;">5-page website, contact form, domain & hosting, mobile responsive</p>
+                    <a href="${contactStarter}" style="display: inline-block; padding: 10px 20px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); color:#ffffff; font-size: 14px; font-weight: 600; text-decoration: none; border-radius: 8px;">Get Starter</a>
+                  </td>
+                </tr>
+              </table>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 20px;">
+                <tr>
+                  <td style="padding: 20px; background-color: rgba(139,92,246,0.08); border-radius: 10px; border: 1px solid rgba(139,92,246,0.2);">
+                    <p style="margin:0 0 4px 0; font-size: 18px; font-weight: 700; color:#f8fafc;">Growth — €1,200</p>
+                    <p style="margin:0 0 12px 0; font-size: 13px; color:#94a3b8;">Everything in Starter + editable homepage. Update key sections yourself.</p>
+                    <a href="${contactGrowth}" style="display: inline-block; padding: 10px 20px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); color:#ffffff; font-size: 14px; font-weight: 600; text-decoration: none; border-radius: 8px;">Choose Growth</a>
+                  </td>
+                </tr>
+              </table>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 24px;">
+                <tr>
+                  <td style="padding: 20px; background-color: rgba(6,182,212,0.06); border-radius: 10px; border: 1px solid rgba(139,92,246,0.2);">
+                    <p style="margin:0 0 4px 0; font-size: 18px; font-weight: 700; color:#f8fafc;">Premium — €2,000</p>
+                    <p style="margin:0 0 12px 0; font-size: 13px; color:#94a3b8;">Everything in Growth + fully editable site. All pages yours to update.</p>
+                    <a href="${contactPremium}" style="display: inline-block; padding: 10px 20px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); color:#ffffff; font-size: 14px; font-weight: 600; text-decoration: none; border-radius: 8px;">Choose Premium</a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:0 0 20px 0; font-size: 15px; color:#f8fafc;">Not sure which package? Get in touch and we'll recommend one.</p>
+              <a href="${contactUrl}" style="display: inline-block; padding: 12px 24px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); color:#ffffff; font-size: 14px; font-weight: 600; text-decoration: none; border-radius: 8px;">Get a quote</a>
+
+              <p style="margin: 28px 0 0 0; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 12px; color:#64748b;">You're getting this because you signed up for updates from Next Level Web. <a href="${unsubscribeUrl}" style="color:#94a3b8; text-decoration: underline;">Unsubscribe from this list</a>.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+export async function sendCampaignEmail(to: string, unsubscribeUrl: string): Promise<SendEmailResult> {
+  const resend = getResend();
+  if (!resend) {
+    return { ok: false, message: 'RESEND_API_KEY not set' };
+  }
+  const html = getCampaignPackagesHtml(unsubscribeUrl);
+  const { error } = await resend.emails.send({
+    from: FROM,
+    to: [to],
+    subject: CAMPAIGN_SUBJECT,
+    html,
+  });
+  if (error) {
+    console.error('Resend campaign email error:', error);
+    const msg = error.message ?? (typeof error === 'object' ? JSON.stringify(error) : String(error));
+    return { ok: false, message: msg };
+  }
+  return { ok: true };
+}

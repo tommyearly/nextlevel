@@ -103,7 +103,10 @@ export default async function AdminPage() {
           </div>
         )}
       </GlassCard>
-      <p className="mt-6">
+      <p className="mt-6 flex flex-wrap gap-4">
+        <Link href="/admin/email" prefetch={false} className="text-accent-blue hover:underline text-sm">
+          Email subscribers & campaigns
+        </Link>
         <Link href="/" prefetch={false} className="text-accent-blue hover:underline text-sm">
           Back to home
         </Link>
