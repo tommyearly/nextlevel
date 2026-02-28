@@ -349,7 +349,7 @@ export function getCampaignPackagesHtml(unsubscribeUrl: string): string {
               <p style="margin:0 0 20px 0; font-size: 15px; color:#f8fafc;">Not sure which package? Get in touch and we'll recommend one.</p>
               <a href="${contactUrl}" style="display: inline-block; padding: 12px 24px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); color:#ffffff; font-size: 14px; font-weight: 600; text-decoration: none; border-radius: 8px;">Get a quote</a>
 
-              <p style="margin: 28px 0 0 0; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 12px; color:#64748b;">You're getting this because you signed up for updates from Next Level Web. <a href="${unsubscribeUrl}" style="color:#94a3b8; text-decoration: underline;">Unsubscribe from this list</a>.</p>
+              <p style="margin: 28px 0 0 0; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 12px; color:#64748b;">You're receiving this email because we believe our web design services may be of interest to you or your business. If you'd prefer not to receive further emails from us, <a href="${unsubscribeUrl}" style="color:#94a3b8; text-decoration: underline;">click here to stop receiving emails</a>.</p>
             </td>
           </tr>
         </table>
