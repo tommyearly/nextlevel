@@ -2,10 +2,7 @@ import type { Metadata } from 'next';
 import Script from 'next/script';
 import { Space_Grotesk, Inter } from 'next/font/google';
 import './globals.css';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import WhatsAppLink from '@/components/WhatsAppLink';
-import CookieBanner from '@/components/CookieBanner';
+import LayoutSwitcher from '@/components/LayoutSwitcher';
 import StructuredData from '@/components/StructuredData';
 
 const spaceGrotesk = Space_Grotesk({
@@ -92,13 +89,7 @@ export default function RootLayout({
           `}
         </Script>
         <StructuredData />
-        <Navbar />
-        <main id="main-content" className="flex-1" role="main">
-          {children}
-        </main>
-        <Footer />
-        <WhatsAppLink />
-        <CookieBanner />
+        <LayoutSwitcher>{children}</LayoutSwitcher>
       </body>
     </html>
   );
